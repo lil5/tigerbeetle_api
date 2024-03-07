@@ -1,0 +1,47 @@
+version: "3"
+
+vars:
+  BINFILE: tigerbeetle_grpc_server
+
+tasks:
+  default: task --list-all
+  dev: 
+    cmds: 
+      - task -p dev:run
+  start:
+    cmds:
+      - task: build
+      - task: build:start
+  build:
+    cmds:
+      - task: build:run
+  setup:
+    cmds:
+      - cmd: brew install protobuf
+        platforms: [darwin]
+      - cmd: apt install -y protobuf-compiler
+        platforms: [linux]
+
+  # Docker
+  docker:start: cd docker_dev; docker compose up -d
+  docker:stop: cd docker_dev; docker compose stop
+  docker:setup: cd docker_dev; docker compose run tigerbeetle format --cluster=0 --replica=0 --replica-count=1 /data/0_0.tigerbeetle
+  docker:remove: cd docker_dev; docker compose rm
+
+  # Internal
+  build:start: ./{{.BINFILE}}
+  build:proto: protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative proto/tigerbeetle.proto
+  build:run:
+    internal: true
+    cmds:
+      - task: build:proto
+      - go build -o {{.BINFILE}}  
+  dev:run: task dev:run:watch
+  dev:run:watch:
+    watch: true
+    sources:
+      - "**/*.go"
+      - exclude: "proto/*.go"
+    cmds:
+      - task: build:run
+      - task build:start

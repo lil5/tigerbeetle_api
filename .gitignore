@@ -1,0 +1,4 @@
+/proto/*.go
+/tigerbeetle_grpc_server
+.task
+config.yml

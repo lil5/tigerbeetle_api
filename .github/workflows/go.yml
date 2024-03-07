@@ -1,0 +1,21 @@
+name: Go
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install Protoc
+      uses: arduino/setup-protoc@v3
+    - name: Install Task
+      uses: arduino/setup-task@v2
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.22'
+    - name: Build
+      run: task build

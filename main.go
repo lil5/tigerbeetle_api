@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"net"
 	"os"
+
 	"tigerbeetle_grpc/proto"
 
 	"github.com/spf13/viper"
-	"golang.org/x/exp/slog"
-
 	tigerbeetle_go "github.com/tigerbeetle/tigerbeetle-go"
 	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
+	"golang.org/x/exp/slog"
 	"google.golang.org/grpc"
 )
 

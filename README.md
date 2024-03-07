@@ -1,6 +1,6 @@
 <h1 style="color:#f9532f">Tiger Beetle gRPC</h1>
 
-A simple gRPC server for TigerBeetle
+A simple gRPC server for [TigerBeetle](https://tigerbeetle.com/)
 
 <img width=200 src="https://tigerbeetle.com/60f5f501f4be1be5f45a50a3_img-performance.png">
 
@@ -10,7 +10,7 @@ Config Example File: [/config-example.yml](/config-example.yml)
 
 ## Development setup
 
-**1. Install [taskfile](https://taskfile.dev/installation/)**
+**1. Install [taskfile](https://taskfile.dev/installation/) and [golang](https://go.dev/)**
 
 **2. Run setup tasks**
 

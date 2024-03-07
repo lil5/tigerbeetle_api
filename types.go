@@ -1,8 +1,9 @@
 package main
 
 import (
-	"tigerbeetle_grpc/proto"
 	"time"
+
+	"tigerbeetle_grpc/proto"
 
 	"github.com/samber/lo"
 	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
@@ -33,6 +34,7 @@ func timestampFromPstringToUint(timestamp *string) (*uint64, error) {
 
 	return timestampFromStringToUint(*timestamp)
 }
+
 func timestampFromUintToString(timestamp uint64) string {
 	return time.Unix(0, int64(timestamp)).Format(time.RFC3339Nano)
 }

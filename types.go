@@ -27,6 +27,9 @@ func timestampFromPstringToUint(timestamp *string) (*uint64, error) {
 	if timestamp == nil {
 		return lo.ToPtr[uint64](0), nil
 	}
+	if *timestamp == "" {
+		return lo.ToPtr[uint64](0), nil
+	}
 
 	return timestampFromStringToUint(*timestamp)
 }

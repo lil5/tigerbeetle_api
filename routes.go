@@ -2,11 +2,17 @@ package main
 
 import (
 	"context"
+	"errors"
 	"tigerbeetle_grpc/proto"
 
 	"github.com/samber/lo"
 	tb "github.com/tigerbeetle/tigerbeetle-go"
 	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
+)
+
+var (
+	ErrZeroAccounts  = errors.New("no accounts were specified")
+	ErrZeroTransfers = errors.New("no transfers were specified")
 )
 
 type server struct {
@@ -19,6 +25,9 @@ func (s *server) GetID(ctx context.Context, in *proto.GetIDRequest) (*proto.GetI
 }
 
 func (s *server) CreateAccounts(ctx context.Context, in *proto.CreateAccountsRequest) (*proto.CreateAccountsReply, error) {
+	if len(in.Accounts) == 0 {
+		return nil, ErrZeroAccounts
+	}
 	accounts := []types.Account{}
 	for _, inAccount := range in.Accounts {
 		id, err := hexStringToUint128(inAccount.Id)
@@ -61,6 +70,9 @@ func (s *server) CreateAccounts(ctx context.Context, in *proto.CreateAccountsReq
 }
 
 func (s *server) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequest) (*proto.CreateTransfersReply, error) {
+	if len(in.Transfers) == 0 {
+		return nil, ErrZeroTransfers
+	}
 	transfers := []types.Transfer{}
 	for _, inTransfer := range in.Transfers {
 		id, err := hexStringToUint128(inTransfer.Id)
@@ -119,6 +131,9 @@ func (s *server) CreateTransfers(ctx context.Context, in *proto.CreateTransfersR
 }
 
 func (s *server) LookupAccounts(ctx context.Context, in *proto.LookupAccountsRequest) (*proto.LookupAccountsReply, error) {
+	if len(in.AccountIds) == 0 {
+		return nil, ErrZeroAccounts
+	}
 	ids := []types.Uint128{}
 	for _, inID := range in.AccountIds {
 		id, err := hexStringToUint128(inID)
@@ -140,6 +155,9 @@ func (s *server) LookupAccounts(ctx context.Context, in *proto.LookupAccountsReq
 }
 
 func (s *server) LookupTransfers(ctx context.Context, in *proto.LookupTransfersRequest) (*proto.LookupTransfersReply, error) {
+	if len(in.TransferIds) == 0 {
+		return nil, ErrZeroTransfers
+	}
 	ids := []types.Uint128{}
 	for _, inID := range in.TransferIds {
 		id, err := hexStringToUint128(inID)
@@ -161,6 +179,9 @@ func (s *server) LookupTransfers(ctx context.Context, in *proto.LookupTransfersR
 }
 
 func (s *server) GetAccountTransfers(ctx context.Context, in *proto.GetAccountTransfersRequest) (*proto.GetAccountTransfersReply, error) {
+	if in.Filter.AccountId == "" {
+		return nil, ErrZeroAccounts
+	}
 	tbFilter, err := AccountFilterFromProtoToTigerbeetle(in.Filter)
 	if err != nil {
 		return nil, err
@@ -177,6 +198,9 @@ func (s *server) GetAccountTransfers(ctx context.Context, in *proto.GetAccountTr
 }
 
 func (s *server) GetAccountHistory(ctx context.Context, in *proto.GetAccountHistoryRequest) (*proto.GetAccountHistoryReply, error) {
+	if in.Filter.AccountId == "" {
+		return nil, ErrZeroAccounts
+	}
 	tbFilter, err := AccountFilterFromProtoToTigerbeetle(in.Filter)
 	if err != nil {
 		return nil, err

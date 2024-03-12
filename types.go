@@ -1,13 +1,13 @@
 package main
 
 import (
+	"log/slog"
 	"time"
 
 	"tigerbeetle_grpc/proto"
 
 	"github.com/samber/lo"
 	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
-	"golang.org/x/exp/slog"
 )
 
 func hexStringToUint128(hex string) (*types.Uint128, error) {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log/slog"
 	"net"
 	"os"
 
@@ -10,7 +11,6 @@ import (
 	"github.com/spf13/viper"
 	tigerbeetle_go "github.com/tigerbeetle/tigerbeetle-go"
 	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
-	"golang.org/x/exp/slog"
 	"google.golang.org/grpc"
 )
 

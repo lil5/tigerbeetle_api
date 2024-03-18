@@ -1,0 +1,32 @@
+meta {
+  name: Create Accounts
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base}}/accounts/create
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "accounts": [
+      {
+        "id": "{{id}}",
+        "debits_pending": 0,
+        "debits_posted": 0,
+        "credits_pending": 0,
+        "credits_posted": 0,
+        "ledger": 1,
+        "code": 1,
+        "flags": null
+      }
+    ]
+  }
+}
+
+vars:pre-request {
+  id: 18e51b35af7a506169d936d422eb94d
+}

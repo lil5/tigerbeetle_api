@@ -144,7 +144,7 @@ func AccountBalanceFromTigerbeetleToJson(tbBalance types.AccountBalance) *Accoun
 
 // either returns filled pointers or an error
 func (ud UserData) ToUint() (ud128 types.Uint128, ud64 uint64, ud32 uint32, err error) {
-	if ud.UserData128 == nil {
+	if ud.UserData128 != nil {
 		var ud128P *types.Uint128
 		ud128P, err = hexStringToUint128(*ud.UserData128)
 		if err != nil {
@@ -153,7 +153,7 @@ func (ud UserData) ToUint() (ud128 types.Uint128, ud64 uint64, ud32 uint32, err 
 		ud128 = *ud128P
 	}
 
-	if ud.UserData64 == nil {
+	if ud.UserData64 != nil {
 		var ud64P *uint64
 		ud64P, err = timestampFromStringToUint(*ud.UserData64)
 		if err != nil {
@@ -162,7 +162,7 @@ func (ud UserData) ToUint() (ud128 types.Uint128, ud64 uint64, ud32 uint32, err 
 		ud64 = *ud64P
 	}
 
-	if ud.UserData32 == nil {
+	if ud.UserData32 != nil {
 		ud32 = uint32(*ud.UserData32)
 	}
 

@@ -1,4 +1,7 @@
 /proto/*.go
 /tigerbeetle_grpc_server
+/tigerbeetle_rest_server
 .task
 config.yml
+/Tigerbeetle\ Rest/environments/*.bru
+!/Tigerbeetle\ Rest/environments/dev.bru

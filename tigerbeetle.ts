@@ -57,19 +57,16 @@ export interface GetAccountHistoryResponse {
 
 // Types
 // ----------------------------------------------------------------
-export interface Account {
+export interface Account extends UserData {
   id: string;
   debits_pending: int64;
   debits_posted: int64;
   credits_pending: int64;
   credits_posted: int64;
-  user_data128: string;
-  user_data64: int64;
-  user_data32: int32;
   ledger: int64;
   code: int32;
   flags?: AccountFlags;
-  timestamp: string;
+  timestamp?: string;
 }
 
 export interface AccountFlags {
@@ -79,15 +76,12 @@ export interface AccountFlags {
   history?: bool;
 }
 
-export interface Transfer {
+export interface Transfer extends UserData {
   id: string;
   debit_account_id: string;
   credit_account_id: string;
   amount: int64;
   pending_id?: string;
-  user_data128: int64;
-  user_data64: int64;
-  user_data32: int32;
   ledger: int64;
   code: int32;
   transfer_flags?: TransferFlags;
@@ -123,4 +117,10 @@ export interface AccountBalance {
   credits_pending: int64;
   credits_posted: int64;
   timestamp: string;
+}
+
+interface UserData {
+  user_data128?: string;
+  user_data64?: int64;
+  user_data32?: int32;
 }

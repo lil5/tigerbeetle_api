@@ -25,7 +25,7 @@ func (s *server) GetID(c *gin.Context) {
 }
 
 func (s *server) CreateAccounts(c *gin.Context) {
-	var req *CreateAccountsRequest
+	req := &CreateAccountsRequest{}
 	if ok := bindJSON(c, req); !ok {
 		return
 	}
@@ -41,12 +41,6 @@ func (s *server) CreateAccounts(c *gin.Context) {
 			abort(c, http.StatusInternalServerError, err)
 			return
 		}
-		// userData64
-		ud128, ud64, ud32, err := inAccount.UserData.ToUint()
-		if err != nil {
-			abort(c, http.StatusInternalServerError, err)
-			return
-		}
 
 		flags := types.AccountFlags{}
 		if inAccount.Flags != nil {
@@ -56,7 +50,7 @@ func (s *server) CreateAccounts(c *gin.Context) {
 			flags.History = inAccount.Flags.History
 		}
 
-		ud128, ud64, ud32, err = inAccount.UserData.ToUint()
+		ud128, ud64, ud32, err := inAccount.UserData.ToUint()
 		if err != nil {
 			abort(c, http.StatusInternalServerError, err)
 			return
@@ -86,13 +80,13 @@ func (s *server) CreateAccounts(c *gin.Context) {
 	for _, r := range resp {
 		resArr = append(resArr, r.Result.String())
 	}
-	c.JSON(http.StatusOK, CreateAccountsResponse{
+	c.JSON(tbError(resArr), CreateAccountsResponse{
 		Results: resArr,
 	})
 }
 
 func (s *server) CreateTransfers(c *gin.Context) {
-	var req *CreateTransfersRequest
+	req := &CreateTransfersRequest{}
 	if ok := bindJSON(c, req); !ok {
 		return
 	}
@@ -109,12 +103,12 @@ func (s *server) CreateTransfers(c *gin.Context) {
 		}
 		flags := types.TransferFlags{}
 		if inTransfer.TransferFlags != nil {
-			inTransfer.TransferFlags.Linked = inTransfer.TransferFlags.Linked
-			inTransfer.TransferFlags.Pending = inTransfer.TransferFlags.Pending
-			inTransfer.TransferFlags.PostPendingTransfer = inTransfer.TransferFlags.PostPendingTransfer
-			inTransfer.TransferFlags.VoidPendingTransfer = inTransfer.TransferFlags.VoidPendingTransfer
-			inTransfer.TransferFlags.BalancingDebit = inTransfer.TransferFlags.BalancingDebit
-			inTransfer.TransferFlags.BalancingCredit = inTransfer.TransferFlags.BalancingCredit
+			flags.Linked = inTransfer.TransferFlags.Linked
+			flags.Pending = inTransfer.TransferFlags.Pending
+			flags.PostPendingTransfer = inTransfer.TransferFlags.PostPendingTransfer
+			flags.VoidPendingTransfer = inTransfer.TransferFlags.VoidPendingTransfer
+			flags.BalancingDebit = inTransfer.TransferFlags.BalancingDebit
+			flags.BalancingCredit = inTransfer.TransferFlags.BalancingCredit
 		}
 
 		debitAccountID, err := hexStringToUint128(inTransfer.DebitAccountID)
@@ -164,13 +158,13 @@ func (s *server) CreateTransfers(c *gin.Context) {
 	for _, r := range resp {
 		resArr = append(resArr, r.Result.String())
 	}
-	c.JSON(http.StatusOK, CreateTransfersResponse{
+	c.JSON(tbError(resArr), CreateTransfersResponse{
 		Results: resArr,
 	})
 }
 
 func (s *server) LookupAccounts(c *gin.Context) {
-	var req *LookupAccountsRequest
+	req := &LookupAccountsRequest{}
 	if ok := bindJSON(c, req); !ok {
 		return
 	}
@@ -202,7 +196,7 @@ func (s *server) LookupAccounts(c *gin.Context) {
 }
 
 func (s *server) LookupTransfers(c *gin.Context) {
-	var req *LookupTransfersRequest
+	req := &LookupTransfersRequest{}
 	if ok := bindJSON(c, req); !ok {
 		return
 	}
@@ -234,7 +228,7 @@ func (s *server) LookupTransfers(c *gin.Context) {
 }
 
 func (s *server) GetAccountTransfers(c *gin.Context) {
-	var req *GetAccountTransfersRequest
+	req := &GetAccountTransfersRequest{}
 	if ok := bindJSON(c, req); !ok {
 		return
 	}
@@ -261,7 +255,7 @@ func (s *server) GetAccountTransfers(c *gin.Context) {
 }
 
 func (s *server) GetAccountHistory(c *gin.Context) {
-	var req *GetAccountHistoryRequest
+	req := &GetAccountHistoryRequest{}
 	if ok := bindJSON(c, req); !ok {
 		return
 	}
@@ -289,6 +283,9 @@ func (s *server) GetAccountHistory(c *gin.Context) {
 
 func bindJSON[V any](c *gin.Context, v *V) (ok bool) {
 	err := c.MustBindWith(v, binding.JSON)
+	if err != nil {
+		c.String(http.StatusBadRequest, err.Error())
+	}
 	return err == nil
 }
 
@@ -297,5 +294,12 @@ func abort(c *gin.Context, status int, err error) {
 		status = http.StatusInternalServerError
 	}
 	c.Error(err)
-	c.String(status, binding.MIMEPlain, err.Error())
+	c.String(status, err.Error())
+}
+
+func tbError(arr []string) int {
+	if len(arr) > 0 {
+		return http.StatusExpectationFailed
+	}
+	return http.StatusOK
 }

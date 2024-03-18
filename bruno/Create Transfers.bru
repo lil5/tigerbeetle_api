@@ -1,0 +1,34 @@
+meta {
+  name: Create Transfers
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base}}/transfers/create
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "transfers": [
+      {
+        "id": "{{id}}",
+        "debit_account_id": "{{user_id_src}}",
+        "credit_account_id": "{{user_id_dest}}",
+        "pending_id": null,
+        "amount": 1000,
+        "ledger": 1,
+        "code": 1,
+        "flags": null
+      }
+    ]
+  }
+}
+
+vars:pre-request {
+  user_id_src: 18e51b35af7a506169d936d422eb94d
+  user_id_dest: 18e51dd94b69f6507d7f56d7568b08d
+  id: 18e51d37b2452e32feaca180b5ff123
+}

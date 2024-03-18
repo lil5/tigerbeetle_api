@@ -1,0 +1,29 @@
+meta {
+  name: Account Transfers
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{base}}/account/transfers
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "filter": {
+      "account_id": "{{id}}",
+      "limit": 100,
+      "flags": {
+        "debits": true,
+        "credits": true,
+        "reserved": true
+      }
+    }
+  }
+}
+
+vars:pre-request {
+  id: 18e51dd94b69f6507d7f56d7568b08d
+}

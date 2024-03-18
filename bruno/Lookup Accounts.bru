@@ -1,0 +1,23 @@
+meta {
+  name: Lookup Accounts
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{base}}/accounts/lookup
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "account_ids": [
+      "{{id}}"
+    ]
+  }
+}
+
+vars:pre-request {
+  id: 18e51dd94b69f6507d7f56d7568b08d
+}

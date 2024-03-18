@@ -1,0 +1,23 @@
+meta {
+  name: Lookup Transfers
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{base}}/transfers/lookup
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "transfer_ids": [
+      "{{id}}"
+    ]
+  }
+}
+
+vars:pre-request {
+  id: 18e51d37b2452e32feaca180b5ff123
+}

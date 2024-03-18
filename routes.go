@@ -1,11 +1,11 @@
 package main
 
 import (
-	"context"
 	"errors"
+	"net/http"
 
-	"tigerbeetle_grpc/proto"
-
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/samber/lo"
 	tb "github.com/tigerbeetle/tigerbeetle-go"
 	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
@@ -17,29 +17,49 @@ var (
 )
 
 type server struct {
-	proto.UnimplementedTigerBeetleServer
 	TB tb.Client
 }
 
-func (s *server) GetID(ctx context.Context, in *proto.GetIDRequest) (*proto.GetIDReply, error) {
-	return &proto.GetIDReply{Id: types.ID().String()}, nil
+func (s *server) GetID(c *gin.Context) {
+	c.JSON(http.StatusOK, GetIDResponse{ID: types.ID().String()})
 }
 
-func (s *server) CreateAccounts(ctx context.Context, in *proto.CreateAccountsRequest) (*proto.CreateAccountsReply, error) {
-	if len(in.Accounts) == 0 {
-		return nil, ErrZeroAccounts
+func (s *server) CreateAccounts(c *gin.Context) {
+	var req *CreateAccountsRequest
+	if ok := bindJSON(c, req); !ok {
+		return
+	}
+	if len(req.Accounts) == 0 {
+		abort(c, http.StatusBadRequest, ErrZeroAccounts)
+		return
 	}
 	accounts := []types.Account{}
-	for _, inAccount := range in.Accounts {
-		id, err := hexStringToUint128(inAccount.Id)
+	for _, inAccount := range req.Accounts {
+		// id
+		id, err := hexStringToUint128(inAccount.ID)
 		if err != nil {
-			return nil, err
+			abort(c, http.StatusInternalServerError, err)
+			return
 		}
-		flags := types.AccountFlags{
-			Linked:                     lo.FromPtrOr(inAccount.Flags.Linked, false),
-			DebitsMustNotExceedCredits: lo.FromPtrOr(inAccount.Flags.DebitsMustNotExceedCredits, false),
-			CreditsMustNotExceedDebits: lo.FromPtrOr(inAccount.Flags.CreditsMustNotExceedDebits, false),
-			History:                    lo.FromPtrOr(inAccount.Flags.History, false),
+		// userData64
+		ud128, ud64, ud32, err := inAccount.UserData.ToUint()
+		if err != nil {
+			abort(c, http.StatusInternalServerError, err)
+			return
+		}
+
+		flags := types.AccountFlags{}
+		if inAccount.Flags != nil {
+			flags.Linked = inAccount.Flags.Linked
+			flags.DebitsMustNotExceedCredits = inAccount.Flags.DebitsMustNotExceedCredits
+			flags.CreditsMustNotExceedDebits = inAccount.Flags.CreditsMustNotExceedDebits
+			flags.History = inAccount.Flags.History
+		}
+
+		ud128, ud64, ud32, err = inAccount.UserData.ToUint()
+		if err != nil {
+			abort(c, http.StatusInternalServerError, err)
+			return
 		}
 		accounts = append(accounts, types.Account{
 			ID:             *id,
@@ -47,9 +67,9 @@ func (s *server) CreateAccounts(ctx context.Context, in *proto.CreateAccountsReq
 			DebitsPosted:   types.ToUint128(uint64(inAccount.DebitsPosted)),
 			CreditsPending: types.ToUint128(uint64(inAccount.CreditsPending)),
 			CreditsPosted:  types.ToUint128(uint64(inAccount.CreditsPosted)),
-			UserData128:    types.ToUint128(uint64(inAccount.UserData128)),
-			UserData64:     uint64(inAccount.UserData64),
-			UserData32:     uint32(inAccount.UserData32),
+			UserData128:    ud128,
+			UserData64:     ud64,
+			UserData32:     ud32,
 			Ledger:         uint32(inAccount.Ledger),
 			Code:           uint16(inAccount.Code),
 			Flags:          flags.ToUint16(),
@@ -58,47 +78,64 @@ func (s *server) CreateAccounts(ctx context.Context, in *proto.CreateAccountsReq
 
 	resp, err := s.TB.CreateAccounts(accounts)
 	if err != nil {
-		return nil, err
+		abort(c, http.StatusInternalServerError, err)
+		return
 	}
 
 	resArr := []string{}
 	for _, r := range resp {
 		resArr = append(resArr, r.Result.String())
 	}
-	return &proto.CreateAccountsReply{
+	c.JSON(http.StatusOK, CreateAccountsResponse{
 		Results: resArr,
-	}, nil
+	})
 }
 
-func (s *server) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequest) (*proto.CreateTransfersReply, error) {
-	if len(in.Transfers) == 0 {
-		return nil, ErrZeroTransfers
+func (s *server) CreateTransfers(c *gin.Context) {
+	var req *CreateTransfersRequest
+	if ok := bindJSON(c, req); !ok {
+		return
+	}
+	if len(req.Transfers) == 0 {
+		abort(c, http.StatusInternalServerError, ErrZeroTransfers)
+		return
 	}
 	transfers := []types.Transfer{}
-	for _, inTransfer := range in.Transfers {
-		id, err := hexStringToUint128(inTransfer.Id)
+	for _, inTransfer := range req.Transfers {
+		id, err := hexStringToUint128(inTransfer.ID)
 		if err != nil {
-			return nil, err
+			abort(c, http.StatusInternalServerError, err)
+			return
 		}
-		flags := types.TransferFlags{
-			Linked:              lo.FromPtrOr(inTransfer.TransferFlags.Linked, false),
-			Pending:             lo.FromPtrOr(inTransfer.TransferFlags.Pending, false),
-			PostPendingTransfer: lo.FromPtrOr(inTransfer.TransferFlags.PostPendingTransfer, false),
-			VoidPendingTransfer: lo.FromPtrOr(inTransfer.TransferFlags.VoidPendingTransfer, false),
-			BalancingDebit:      lo.FromPtrOr(inTransfer.TransferFlags.BalancingDebit, false),
-			BalancingCredit:     lo.FromPtrOr(inTransfer.TransferFlags.BalancingCredit, false),
+		flags := types.TransferFlags{}
+		if inTransfer.TransferFlags != nil {
+			inTransfer.TransferFlags.Linked = inTransfer.TransferFlags.Linked
+			inTransfer.TransferFlags.Pending = inTransfer.TransferFlags.Pending
+			inTransfer.TransferFlags.PostPendingTransfer = inTransfer.TransferFlags.PostPendingTransfer
+			inTransfer.TransferFlags.VoidPendingTransfer = inTransfer.TransferFlags.VoidPendingTransfer
+			inTransfer.TransferFlags.BalancingDebit = inTransfer.TransferFlags.BalancingDebit
+			inTransfer.TransferFlags.BalancingCredit = inTransfer.TransferFlags.BalancingCredit
 		}
-		debitAccountID, err := hexStringToUint128(inTransfer.DebitAccountId)
+
+		debitAccountID, err := hexStringToUint128(inTransfer.DebitAccountID)
 		if err != nil {
-			return nil, err
+			abort(c, http.StatusInternalServerError, err)
+			return
 		}
-		creditAccountID, err := hexStringToUint128(inTransfer.CreditAccountId)
+		creditAccountID, err := hexStringToUint128(inTransfer.CreditAccountID)
 		if err != nil {
-			return nil, err
+			abort(c, http.StatusInternalServerError, err)
+			return
 		}
-		pendingID, err := hexStringToUint128(lo.FromPtrOr(inTransfer.PendingId, ""))
+		pendingID, err := hexStringToUint128(lo.FromPtrOr(inTransfer.PendingID, ""))
 		if err != nil {
-			return nil, err
+			abort(c, http.StatusInternalServerError, err)
+			return
+		}
+		ud128, ud64, ud32, err := inTransfer.UserData.ToUint()
+		if err != nil {
+			abort(c, http.StatusInternalServerError, err)
+			return
 		}
 		transfers = append(transfers, types.Transfer{
 			ID:              *id,
@@ -106,9 +143,9 @@ func (s *server) CreateTransfers(ctx context.Context, in *proto.CreateTransfersR
 			CreditAccountID: *creditAccountID,
 			Amount:          types.ToUint128(uint64(inTransfer.Amount)),
 			PendingID:       *pendingID,
-			UserData128:     types.ToUint128(uint64(inTransfer.UserData128)),
-			UserData64:      uint64(inTransfer.UserData64),
-			UserData32:      uint32(inTransfer.UserData32),
+			UserData128:     ud128,
+			UserData64:      ud64,
+			UserData32:      ud32,
 			Timeout:         0,
 			Ledger:          uint32(inTransfer.Ledger),
 			Code:            uint16(inTransfer.Ledger),
@@ -119,100 +156,146 @@ func (s *server) CreateTransfers(ctx context.Context, in *proto.CreateTransfersR
 
 	resp, err := s.TB.CreateTransfers(transfers)
 	if err != nil {
-		return nil, err
+		abort(c, http.StatusInternalServerError, err)
+		return
 	}
 
 	resArr := []string{}
 	for _, r := range resp {
 		resArr = append(resArr, r.Result.String())
 	}
-	return &proto.CreateTransfersReply{
+	c.JSON(http.StatusOK, CreateTransfersResponse{
 		Results: resArr,
-	}, nil
+	})
 }
 
-func (s *server) LookupAccounts(ctx context.Context, in *proto.LookupAccountsRequest) (*proto.LookupAccountsReply, error) {
-	if len(in.AccountIds) == 0 {
-		return nil, ErrZeroAccounts
+func (s *server) LookupAccounts(c *gin.Context) {
+	var req *LookupAccountsRequest
+	if ok := bindJSON(c, req); !ok {
+		return
+	}
+	if len(req.AccountIds) == 0 {
+		abort(c, http.StatusInternalServerError, ErrZeroAccounts)
+		return
 	}
 	ids := []types.Uint128{}
-	for _, inID := range in.AccountIds {
+	for _, inID := range req.AccountIds {
 		id, err := hexStringToUint128(inID)
 		if err != nil {
-			return nil, err
+			abort(c, http.StatusInternalServerError, err)
+			return
 		}
 		ids = append(ids, *id)
 	}
 
 	res, err := s.TB.LookupAccounts(ids)
 	if err != nil {
-		return nil, err
+		abort(c, http.StatusInternalServerError, err)
+		return
 	}
 
-	pAccounts := lo.Map(res, func(a types.Account, _ int) *proto.Account {
-		return AccountToProtoAccount(a)
+	pAccounts := lo.Map(res, func(a types.Account, _ int) Account {
+		return *AccountToJsonAccount(a)
 	})
-	return &proto.LookupAccountsReply{Accounts: pAccounts}, nil
+
+	c.JSON(http.StatusOK, LookupAccountsResponse{Accounts: pAccounts})
 }
 
-func (s *server) LookupTransfers(ctx context.Context, in *proto.LookupTransfersRequest) (*proto.LookupTransfersReply, error) {
-	if len(in.TransferIds) == 0 {
-		return nil, ErrZeroTransfers
+func (s *server) LookupTransfers(c *gin.Context) {
+	var req *LookupTransfersRequest
+	if ok := bindJSON(c, req); !ok {
+		return
+	}
+	if len(req.TransferIds) == 0 {
+		abort(c, http.StatusInternalServerError, ErrZeroTransfers)
+		return
 	}
 	ids := []types.Uint128{}
-	for _, inID := range in.TransferIds {
+	for _, inID := range req.TransferIds {
 		id, err := hexStringToUint128(inID)
 		if err != nil {
-			return nil, err
+			abort(c, http.StatusInternalServerError, err)
+			return
 		}
 		ids = append(ids, *id)
 	}
 
 	res, err := s.TB.LookupTransfers(ids)
 	if err != nil {
-		return nil, err
+		abort(c, http.StatusInternalServerError, err)
+		return
 	}
 
-	pTransfers := lo.Map(res, func(a types.Transfer, _ int) *proto.Transfer {
-		return TransferToProtoTransfer(a)
+	pTransfers := lo.Map(res, func(a types.Transfer, _ int) Transfer {
+		return *TransferToJsonTransfer(a)
 	})
-	return &proto.LookupTransfersReply{Transfers: pTransfers}, nil
+
+	c.JSON(http.StatusOK, LookupTransfersResponse{Transfers: pTransfers})
 }
 
-func (s *server) GetAccountTransfers(ctx context.Context, in *proto.GetAccountTransfersRequest) (*proto.GetAccountTransfersReply, error) {
-	if in.Filter.AccountId == "" {
-		return nil, ErrZeroAccounts
+func (s *server) GetAccountTransfers(c *gin.Context) {
+	var req *GetAccountTransfersRequest
+	if ok := bindJSON(c, req); !ok {
+		return
 	}
-	tbFilter, err := AccountFilterFromProtoToTigerbeetle(in.Filter)
+	if req.Filter.AccountID == "" {
+		abort(c, http.StatusInternalServerError, ErrZeroAccounts)
+		return
+	}
+	tbFilter, err := AccountFilterFromJsonToTigerbeetle(&req.Filter)
 	if err != nil {
-		return nil, err
+		abort(c, http.StatusInternalServerError, err)
+		return
 	}
 	res, err := s.TB.GetAccountTransfers(*tbFilter)
 	if err != nil {
-		return nil, err
+		abort(c, http.StatusInternalServerError, err)
+		return
 	}
 
-	pTransfers := lo.Map(res, func(v types.Transfer, _ int) *proto.Transfer {
-		return TransferToProtoTransfer(v)
+	pTransfers := lo.Map(res, func(v types.Transfer, _ int) Transfer {
+		return *TransferToJsonTransfer(v)
 	})
-	return &proto.GetAccountTransfersReply{Transfers: pTransfers}, nil
+
+	c.JSON(http.StatusOK, GetAccountTransfersResponse{Transfers: pTransfers})
 }
 
-func (s *server) GetAccountHistory(ctx context.Context, in *proto.GetAccountHistoryRequest) (*proto.GetAccountHistoryReply, error) {
-	if in.Filter.AccountId == "" {
-		return nil, ErrZeroAccounts
+func (s *server) GetAccountHistory(c *gin.Context) {
+	var req *GetAccountHistoryRequest
+	if ok := bindJSON(c, req); !ok {
+		return
 	}
-	tbFilter, err := AccountFilterFromProtoToTigerbeetle(in.Filter)
+	if req.Filter.AccountID == "" {
+		abort(c, http.StatusInternalServerError, ErrZeroAccounts)
+		return
+	}
+	tbFilter, err := AccountFilterFromJsonToTigerbeetle(&req.Filter)
 	if err != nil {
-		return nil, err
+		abort(c, http.StatusInternalServerError, err)
+		return
 	}
 	res, err := s.TB.GetAccountHistory(*tbFilter)
 	if err != nil {
-		return nil, err
+		abort(c, http.StatusInternalServerError, err)
+		return
 	}
 
-	pBalances := lo.Map(res, func(v types.AccountBalance, _ int) *proto.AccountBalance {
-		return AccountBalanceFromTigerbeetleToProto(v)
+	pBalances := lo.Map(res, func(v types.AccountBalance, _ int) AccountBalance {
+		return *AccountBalanceFromTigerbeetleToJson(v)
 	})
-	return &proto.GetAccountHistoryReply{AccountBalances: pBalances}, nil
+
+	c.JSON(http.StatusOK, GetAccountHistoryResponse{AccountBalances: pBalances})
+}
+
+func bindJSON[V any](c *gin.Context, v *V) (ok bool) {
+	err := c.MustBindWith(v, binding.JSON)
+	return err == nil
+}
+
+func abort(c *gin.Context, status int, err error) {
+	if status == 0 {
+		status = http.StatusInternalServerError
+	}
+	c.Error(err)
+	c.String(status, binding.MIMEPlain, err.Error())
 }

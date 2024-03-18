@@ -3,15 +3,12 @@ package main
 import (
 	"fmt"
 	"log/slog"
-	"net"
 	"os"
 
-	"tigerbeetle_grpc/proto"
-
+	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	tigerbeetle_go "github.com/tigerbeetle/tigerbeetle-go"
 	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
-	"google.golang.org/grpc"
 )
 
 // server is used to implement helloworld.GreeterServer.
@@ -51,19 +48,18 @@ func main() {
 	}
 	defer tb.Close()
 
-	// Create grpc server
-	s := grpc.NewServer()
-	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%d", host, port))
-	if err != nil {
-		slog.Error("failed to listen:", err)
-		os.Exit(1)
-	}
-	proto.RegisterTigerBeetleServer(s, &server{TB: tb})
-	slog.Info("server listening at", "address", lis.Addr())
-	if err := s.Serve(lis); err != nil {
-		slog.Error("failed to serve:", err)
-		os.Exit(1)
-	}
+	// Create rest server
+	app := server{tb}
+	r := gin.New()
+	r.GET("/id", app.GetID)
+	r.POST("/accounts/create", app.CreateAccounts)
+	r.POST("/transfers/create", app.CreateTransfers)
+	r.POST("/accounts/lookup", app.LookupAccounts)
+	r.POST("/transfers/lookup", app.LookupTransfers)
+	r.POST("/account/transfers", app.GetAccountTransfers)
+	r.POST("/account/history", app.GetAccountHistory)
 
-	slog.Info("server exiting")
+	slog.Info("server listening at", "host", host, "port", port)
+	defer slog.Info("server exiting")
+	r.Run(fmt.Sprintf("%s:%d", host, port))
 }

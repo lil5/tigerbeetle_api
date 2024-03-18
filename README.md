@@ -1,6 +1,6 @@
-<h1 style="color:#f9532f">Tiger Beetle gRPC</h1>
+<h1 style="color:#f9532f">Tiger Beetle REST</h1>
 
-A simple gRPC server for [TigerBeetle](https://tigerbeetle.com/)
+A simple REST api server for [TigerBeetle](https://tigerbeetle.com/)
 
 <img width=200 src="https://tigerbeetle.com/60f5f501f4be1be5f45a50a3_img-performance.png">
 

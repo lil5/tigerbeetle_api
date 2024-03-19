@@ -4,9 +4,12 @@ A simple REST api server for [TigerBeetle](https://tigerbeetle.com/)
 
 <img width=200 src="https://tigerbeetle.com/60f5f501f4be1be5f45a50a3_img-performance.png">
 
-Proto File: [/proto/tigerbeetle.proto](/proto/tigerbeetle.proto)
+**Rest API:** Tigerbeetle REST API uses 🐶 Bruno
 
-Config Example File: [/config-example.yml](/config-example.yml)
+Download the client here: https://www.usebruno.com/
+And get started by opening the `/bruno` directory in Bruno.
+
+**Config Example File:** [/config-example.yml](/config-example.yml)
 
 ## Development setup
 

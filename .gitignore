@@ -4,4 +4,7 @@
 .task
 config.yml
 /Tigerbeetle\ Rest/environments/*.bru
+/build
+
 !/Tigerbeetle\ Rest/environments/dev.bru
+!.gitkeep

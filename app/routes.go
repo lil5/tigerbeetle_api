@@ -1,4 +1,4 @@
-package main
+package app
 
 import (
 	"errors"
@@ -16,15 +16,15 @@ var (
 	ErrZeroTransfers = errors.New("no transfers were specified")
 )
 
-type server struct {
+type Server struct {
 	TB tb.Client
 }
 
-func (s *server) GetID(c *gin.Context) {
+func (s *Server) GetID(c *gin.Context) {
 	c.JSON(http.StatusOK, GetIDResponse{ID: types.ID().String()})
 }
 
-func (s *server) CreateAccounts(c *gin.Context) {
+func (s *Server) CreateAccounts(c *gin.Context) {
 	req := &CreateAccountsRequest{}
 	if ok := bindJSON(c, req); !ok {
 		return
@@ -85,7 +85,7 @@ func (s *server) CreateAccounts(c *gin.Context) {
 	})
 }
 
-func (s *server) CreateTransfers(c *gin.Context) {
+func (s *Server) CreateTransfers(c *gin.Context) {
 	req := &CreateTransfersRequest{}
 	if ok := bindJSON(c, req); !ok {
 		return
@@ -163,7 +163,7 @@ func (s *server) CreateTransfers(c *gin.Context) {
 	})
 }
 
-func (s *server) LookupAccounts(c *gin.Context) {
+func (s *Server) LookupAccounts(c *gin.Context) {
 	req := &LookupAccountsRequest{}
 	if ok := bindJSON(c, req); !ok {
 		return
@@ -195,7 +195,7 @@ func (s *server) LookupAccounts(c *gin.Context) {
 	c.JSON(http.StatusOK, LookupAccountsResponse{Accounts: pAccounts})
 }
 
-func (s *server) LookupTransfers(c *gin.Context) {
+func (s *Server) LookupTransfers(c *gin.Context) {
 	req := &LookupTransfersRequest{}
 	if ok := bindJSON(c, req); !ok {
 		return
@@ -227,7 +227,7 @@ func (s *server) LookupTransfers(c *gin.Context) {
 	c.JSON(http.StatusOK, LookupTransfersResponse{Transfers: pTransfers})
 }
 
-func (s *server) GetAccountTransfers(c *gin.Context) {
+func (s *Server) GetAccountTransfers(c *gin.Context) {
 	req := &GetAccountTransfersRequest{}
 	if ok := bindJSON(c, req); !ok {
 		return
@@ -254,7 +254,7 @@ func (s *server) GetAccountTransfers(c *gin.Context) {
 	c.JSON(http.StatusOK, GetAccountTransfersResponse{Transfers: pTransfers})
 }
 
-func (s *server) GetAccountBalances(c *gin.Context) {
+func (s *Server) GetAccountBalances(c *gin.Context) {
 	req := &GetAccountBalancesRequest{}
 	if ok := bindJSON(c, req); !ok {
 		return

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"tigerbeetle_grpc/app"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
@@ -49,15 +50,15 @@ func main() {
 	defer tb.Close()
 
 	// Create rest server
-	app := server{tb}
+	s := app.Server{TB: tb}
 	r := gin.New()
-	r.GET("/id", app.GetID)
-	r.POST("/accounts/create", app.CreateAccounts)
-	r.POST("/transfers/create", app.CreateTransfers)
-	r.POST("/accounts/lookup", app.LookupAccounts)
-	r.POST("/transfers/lookup", app.LookupTransfers)
-	r.POST("/account/transfers", app.GetAccountTransfers)
-	r.POST("/account/balances", app.GetAccountBalances)
+	r.GET("/id", s.GetID)
+	r.POST("/accounts/create", s.CreateAccounts)
+	r.POST("/transfers/create", s.CreateTransfers)
+	r.POST("/accounts/lookup", s.LookupAccounts)
+	r.POST("/transfers/lookup", s.LookupTransfers)
+	r.POST("/account/transfers", s.GetAccountTransfers)
+	r.POST("/account/balances", s.GetAccountBalances)
 
 	slog.Info("server listening at", "host", host, "port", port)
 	defer slog.Info("server exiting")

@@ -16,6 +16,29 @@ tasks:
     cmds:
       - task: build:run
 
+  release:
+    cmds:
+      # - cmd: CC="zig cc -target x86_64-linux" CXX="zig c++ -target x86_64-linux" CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -o build/tigerbeetle_api_linux_amd64 main.go
+      #   platforms: [darwin]
+      - cmd: CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 go build -o build/tigerbeetle_api_darwin_arm64 main.go
+        platforms: [darwin]
+      - cmd: CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -o build/tigerbeetle_api_linux_amd64 main.go
+        platforms: [linux]
+  release:run:
+    - cmd: ./build/tigerbeetle_api_darwin_arm64
+      platforms: [darwin]
+    - cmd: ./build/tigerbeetle_api_linux_amd64
+      platforms: [linux]
+  # release:run:docker:
+  #   - cmd: docker run --rm --platform=linux/amd64 -v .:/app --network host ubuntu sh -c 'cd /app; ./build/tigerbeetle_api_linux_amd64'
+  # release:setup:darwin:
+  #   desc: Install cross-compilation toolchain for darwin
+  #   preconditions: 
+  #     - sh: "! brew list zig"
+  #   platforms: [darwin]
+  #   cmds:
+  #     - cmd: brew install zig
+
   # Docker
   docker:start: cd docker_dev; docker compose up -d
   docker:stop: cd docker_dev; docker compose stop

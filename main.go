@@ -12,8 +12,6 @@ import (
 	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
 )
 
-// server is used to implement helloworld.GreeterServer.
-
 func main() {
 	// Parse command line arguments
 	viper.SetConfigName("config")

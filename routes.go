@@ -254,8 +254,8 @@ func (s *server) GetAccountTransfers(c *gin.Context) {
 	c.JSON(http.StatusOK, GetAccountTransfersResponse{Transfers: pTransfers})
 }
 
-func (s *server) GetAccountHistory(c *gin.Context) {
-	req := &GetAccountHistoryRequest{}
+func (s *server) GetAccountBalances(c *gin.Context) {
+	req := &GetAccountBalancesRequest{}
 	if ok := bindJSON(c, req); !ok {
 		return
 	}
@@ -268,7 +268,7 @@ func (s *server) GetAccountHistory(c *gin.Context) {
 		abort(c, http.StatusInternalServerError, err)
 		return
 	}
-	res, err := s.TB.GetAccountHistory(*tbFilter)
+	res, err := s.TB.GetAccountBalances(*tbFilter)
 	if err != nil {
 		abort(c, http.StatusInternalServerError, err)
 		return
@@ -278,7 +278,7 @@ func (s *server) GetAccountHistory(c *gin.Context) {
 		return *AccountBalanceFromTigerbeetleToJson(v)
 	})
 
-	c.JSON(http.StatusOK, GetAccountHistoryResponse{AccountBalances: pBalances})
+	c.JSON(http.StatusOK, GetAccountBalancesResponse{AccountBalances: pBalances})
 }
 
 func bindJSON[V any](c *gin.Context, v *V) (ok bool) {

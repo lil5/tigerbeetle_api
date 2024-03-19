@@ -37,10 +37,10 @@ type GetAccountTransfersRequest struct {
 type GetAccountTransfersResponse struct {
 	Transfers []Transfer `json:"transfers"`
 }
-type GetAccountHistoryRequest struct {
+type GetAccountBalancesRequest struct {
 	Filter AccountFilter `json:"filter"`
 }
-type GetAccountHistoryResponse struct {
+type GetAccountBalancesResponse struct {
 	AccountBalances []AccountBalance `json:"account_balances"`
 }
 

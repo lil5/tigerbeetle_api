@@ -5,7 +5,7 @@ export interface TigerBeetle {
   LookupAccounts: (req: LookupAccountsRequest) => Promise<LookupAccountsResponse>
   LookupTransfers: (req: LookupTransfersRequest) => Promise<LookupTransfersResponse>
   GetAccountTransfers: (req: GetAccountTransfersRequest) => Promise<GetAccountTransfersResponse>
-  GetAccountHistory: (req: GetAccountHistoryRequest) => Promise<GetAccountHistoryResponse>
+  GetAccountBalances: (req: GetAccountBalancesRequest) => Promise<GetAccountBalancesResponse>
 }
 
 type int64 = number
@@ -47,10 +47,10 @@ export interface GetAccountTransfersRequest {
 export interface GetAccountTransfersResponse {
   transfers: Transfer[];
 }
-export interface GetAccountHistoryRequest {
+export interface GetAccountBalancesRequest {
   filter: AccountFilter;
 }
-export interface GetAccountHistoryResponse {
+export interface GetAccountBalancesResponse {
   account_balances: AccountBalance[];
 }
 

@@ -57,7 +57,7 @@ func main() {
 	r.POST("/accounts/lookup", app.LookupAccounts)
 	r.POST("/transfers/lookup", app.LookupTransfers)
 	r.POST("/account/transfers", app.GetAccountTransfers)
-	r.POST("/account/history", app.GetAccountHistory)
+	r.POST("/account/balances", app.GetAccountBalances)
 
 	slog.Info("server listening at", "host", host, "port", port)
 	defer slog.Info("server exiting")

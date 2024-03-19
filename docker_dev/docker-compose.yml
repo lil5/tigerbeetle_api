@@ -4,7 +4,7 @@ name: tigerbeetle_grpc
 
 services:
   tigerbeetle:
-    image: ghcr.io/tigerbeetle/tigerbeetle:0.14.184
+    image: ghcr.io/tigerbeetle/tigerbeetle:0.15.2
     volumes:
       - tigerbeetle:/data
     ports:

@@ -1,22 +1,33 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log/slog"
 	"os"
-	"tigerbeetle_grpc/app"
+	"strings"
+
+	"github.com/lil5/tigerbeetle_api/app"
 
 	"github.com/gin-gonic/gin"
+	"github.com/samber/lo"
 	"github.com/spf13/viper"
 	tigerbeetle_go "github.com/tigerbeetle/tigerbeetle-go"
 	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
 )
 
 func main() {
+	// Parse flags
+	fFile := flag.String("c", "config.yml", "Override config file")
+	flag.Parse()
+
+	fpath, name, ext := app.ReadFlag(lo.FromPtrOr(fFile, "config.yml"))
+	slog.Info(fmt.Sprintf("config file: %s/%s.%s", fpath, name, ext))
+
 	// Parse command line arguments
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath(".")
+	viper.SetConfigName(name)
+	viper.SetConfigType(ext)
+	viper.AddConfigPath(fpath)
 	err := viper.ReadInConfig()
 	if err != nil {
 		slog.Error("fatal error config file:", err)
@@ -38,6 +49,8 @@ func main() {
 		slog.Error("tb_addresses is empty")
 		os.Exit(1)
 	}
+
+	slog.Info("Connecting to tigerbeetle cluster", "addresses:", strings.Join(tbAddresses, ", "))
 
 	// Connect to tigerbeetle
 	tb, err := tigerbeetle_go.NewClient(types.ToUint128(tbClusterId), tbAddresses, tbConcurrencyMax)

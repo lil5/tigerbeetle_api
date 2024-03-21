@@ -1,6 +1,6 @@
 version: "3"
 
-name: tigerbeetle_grpc
+name: tigerbeetle_api
 
 services:
   tigerbeetle:

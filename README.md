@@ -1,3 +1,5 @@
+[![GoDoc](https://pkg.go.dev/badge/github.com/lil5/tigerbeetle_api?status.svg)](https://pkg.go.dev/github.com/lil5/tigerbeetle_api?tab=doc)
+
 <h1 style="color:#f9532f">Tiger Beetle REST</h1>
 
 A simple REST api server for [TigerBeetle](https://tigerbeetle.com/)
@@ -15,16 +17,16 @@ And get started by opening the `/bruno` directory in Bruno.
 
 **1. Install [taskfile](https://taskfile.dev/installation/) and [golang](https://go.dev/)**
 
-**2. Run setup tasks**
+**2. Install zig for cross-compilation**
 
 ```
-$ task setup
+$ brew install zig
 ```
 
 Setup and run tigerbeetle in docker (optional)
 
 ```
-$ task docker:setup docker:start
+$ make docker_setup docker_start
 ```
 
 **3. Copy example config file**
@@ -36,13 +38,7 @@ $ cp config-example.yml config.yml
 **4. Run server with the following command**
 
 ```
-$ task start
-```
-
-Or run and watch for changes
-
-```
-$ task dev
+$ make start
 ```
 
 ## License

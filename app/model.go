@@ -99,7 +99,7 @@ type AccountFilter struct {
 type AccountFilterFlags struct {
 	Debits   bool `json:"debits"`
 	Credits  bool `json:"credits"`
-	Reserved bool `json:"reserved"`
+	Reversed bool `json:"reversed"`
 }
 
 type AccountBalance struct {

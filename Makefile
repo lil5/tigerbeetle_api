@@ -1,4 +1,5 @@
 start: go run .
+.PHONY=build
 build: go build .
 
 release: release_darwin_arm64 release_darwin_arm64 release_linux_amd64 release_linux_arm64

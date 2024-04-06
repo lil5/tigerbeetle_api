@@ -119,7 +119,7 @@ func AccountFilterFromJsonToTigerbeetle(pAccountFilter *AccountFilter) (*types.A
 		tbFlags = types.AccountFilterFlags{
 			Debits:   pAccountFilter.Flags.Debits,
 			Credits:  pAccountFilter.Flags.Credits,
-			Reversed: pAccountFilter.Flags.Reserved,
+			Reversed: pAccountFilter.Flags.Reversed,
 		}
 	}
 

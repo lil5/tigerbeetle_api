@@ -188,8 +188,8 @@ func (s *Server) LookupAccounts(c *gin.Context) {
 		return
 	}
 
-	pAccounts := lo.Map(res, func(a types.Account, _ int) Account {
-		return *AccountToJsonAccount(a)
+	pAccounts := lo.Map(res, func(a types.Account, _ int) *Account {
+		return AccountToJsonAccount(a)
 	})
 
 	c.JSON(http.StatusOK, LookupAccountsResponse{Accounts: pAccounts})
@@ -220,8 +220,8 @@ func (s *Server) LookupTransfers(c *gin.Context) {
 		return
 	}
 
-	pTransfers := lo.Map(res, func(a types.Transfer, _ int) Transfer {
-		return *TransferToJsonTransfer(a)
+	pTransfers := lo.Map(res, func(a types.Transfer, _ int) *Transfer {
+		return TransferToJsonTransfer(a)
 	})
 
 	c.JSON(http.StatusOK, LookupTransfersResponse{Transfers: pTransfers})
@@ -247,8 +247,8 @@ func (s *Server) GetAccountTransfers(c *gin.Context) {
 		return
 	}
 
-	pTransfers := lo.Map(res, func(v types.Transfer, _ int) Transfer {
-		return *TransferToJsonTransfer(v)
+	pTransfers := lo.Map(res, func(v types.Transfer, _ int) *Transfer {
+		return TransferToJsonTransfer(v)
 	})
 
 	c.JSON(http.StatusOK, GetAccountTransfersResponse{Transfers: pTransfers})

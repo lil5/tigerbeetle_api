@@ -23,19 +23,19 @@ type LookupAccountsRequest struct {
 	AccountIds []string `json:"account_ids"`
 }
 type LookupAccountsResponse struct {
-	Accounts []Account `json:"accounts"`
+	Accounts []*Account `json:"accounts"`
 }
 type LookupTransfersRequest struct {
 	TransferIds []string `json:"transfer_ids"`
 }
 type LookupTransfersResponse struct {
-	Transfers []Transfer `json:"transfers"`
+	Transfers []*Transfer `json:"transfers"`
 }
 type GetAccountTransfersRequest struct {
 	Filter AccountFilter `json:"filter"`
 }
 type GetAccountTransfersResponse struct {
-	Transfers []Transfer `json:"transfers"`
+	Transfers []*Transfer `json:"transfers"`
 }
 type GetAccountBalancesRequest struct {
 	Filter AccountFilter `json:"filter"`

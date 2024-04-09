@@ -1,3 +1,6 @@
+default:
+	@grep '^[^#[:space:].].*:' Makefile
+
 start: go run .
 .PHONY=build
 build: go build .

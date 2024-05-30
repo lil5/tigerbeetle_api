@@ -17,11 +17,11 @@ import (
 )
 
 type Config struct {
-	Port             int      `default:"50051" yml:"port" env:"PORT"`
-	Host             string   `default:"0.0.0.0" yml:"host" env:"HOST"`
-	TbClusterId      int      `default:"0" yml:"tb_cluster_id" env:"TB_CLUSTER_ID"`
-	TbAddresses      []string `required:"true" yml:"tb_addresses" env:"TB_ADDRESSES"`
-	TbConcurrencyMax int      `default:"2" yml:"tb_concurrency_max" env:"TB_CONCURRENCY_MAX"`
+	Port             int    `default:"50051" yaml:"port" env:"PORT"`
+	Host             string `default:"0.0.0.0" yaml:"host" env:"HOST"`
+	TbClusterId      int    `default:"0" yaml:"tb_cluster_id" env:"TB_CLUSTER_ID"`
+	TbAddresses      string `required:"true" yaml:"tb_addresses" env:"TB_ADDRESSES"`
+	TbConcurrencyMax int    `default:"2" yaml:"tb_concurrency_max" env:"TB_CONCURRENCY_MAX"`
 }
 
 func main() {
@@ -38,15 +38,16 @@ func main() {
 		slog.Error("fatal error config file:", err)
 		os.Exit(1)
 	}
-	if len(config.TbAddresses) == 0 {
+	if config.TbAddresses == "" {
 		slog.Error("tb_addresses is empty")
 		os.Exit(1)
 	}
+	tbAddresses := strings.Split(config.TbAddresses, ",")
 
-	slog.Info("Connecting to tigerbeetle cluster", "addresses:", strings.Join(config.TbAddresses, ", "))
+	slog.Info("Connecting to tigerbeetle cluster", "addresses:", strings.Join(tbAddresses, ", "))
 
 	// Connect to tigerbeetle
-	tb, err := tigerbeetle_go.NewClient(types.ToUint128(uint64(config.TbClusterId)), config.TbAddresses, uint(config.TbConcurrencyMax))
+	tb, err := tigerbeetle_go.NewClient(types.ToUint128(uint64(config.TbClusterId)), tbAddresses, uint(config.TbConcurrencyMax))
 	if err != nil {
 		slog.Error("unable to connect to tigerbeetle:", err)
 		os.Exit(1)

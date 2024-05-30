@@ -11,7 +11,7 @@ services:
       - 127.0.0.1:3033:3033
     environment:
       - TB_ADDRESSES=0.0.0.0:3033
-    command: start /data/0_0.tigerbeetle
+    command: start --addresses=0.0.0.0:3033 /data/0_0.tigerbeetle
 
 volumes:
   tigerbeetle:

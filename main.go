@@ -11,7 +11,6 @@ import (
 	"github.com/lil5/tigerbeetle_api/app"
 
 	"github.com/gin-gonic/gin"
-	"github.com/samber/lo"
 	tigerbeetle_go "github.com/tigerbeetle/tigerbeetle-go"
 	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
 )
@@ -26,17 +25,19 @@ type Config struct {
 
 func main() {
 	// Parse flags
-	fFile := flag.String("c", "config.yml", "Override config file")
-	flag.Parse()
-
-	fpath, name, ext := app.ReadFlag(lo.FromPtrOr(fFile, "config.yml"))
-	slog.Info(fmt.Sprintf("config file: %s/%s.%s", fpath, name, ext))
-
 	config := &Config{}
-	err := configor.Load(config, fpath)
-	if err != nil {
-		slog.Error("fatal error config file:", err)
-		os.Exit(1)
+	{
+		fFile := flag.String("c", "", "Override config file")
+		flag.Parse()
+		files := []string{}
+		if *fFile != "" {
+			files = append(files, *fFile)
+		}
+		err := configor.Load(config, files...)
+		if err != nil {
+			slog.Error("fatal error config file:", err)
+			os.Exit(1)
+		}
 	}
 	if config.TbAddresses == "" {
 		slog.Error("tb_addresses is empty")

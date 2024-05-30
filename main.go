@@ -7,14 +7,22 @@ import (
 	"os"
 	"strings"
 
+	"github.com/jinzhu/configor"
 	"github.com/lil5/tigerbeetle_api/app"
 
 	"github.com/gin-gonic/gin"
 	"github.com/samber/lo"
-	"github.com/spf13/viper"
 	tigerbeetle_go "github.com/tigerbeetle/tigerbeetle-go"
 	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
 )
+
+type Config struct {
+	Port             int      `default:"50051" yml:"port" env:"PORT"`
+	Host             string   `default:"0.0.0.0" yml:"host" env:"HOST"`
+	TbClusterId      int      `default:"0" yml:"tb_cluster_id" env:"TB_CLUSTER_ID"`
+	TbAddresses      []string `required:"true" yml:"tb_addresses" env:"TB_ADDRESSES"`
+	TbConcurrencyMax int      `default:"2" yml:"tb_concurrency_max" env:"TB_CONCURRENCY_MAX"`
+}
 
 func main() {
 	// Parse flags
@@ -24,36 +32,21 @@ func main() {
 	fpath, name, ext := app.ReadFlag(lo.FromPtrOr(fFile, "config.yml"))
 	slog.Info(fmt.Sprintf("config file: %s/%s.%s", fpath, name, ext))
 
-	// Parse command line arguments
-	viper.SetConfigName(name)
-	viper.SetConfigType(ext)
-	viper.AddConfigPath(fpath)
-	err := viper.ReadInConfig()
+	config := &Config{}
+	err := configor.Load(config, fpath)
 	if err != nil {
 		slog.Error("fatal error config file:", err)
 		os.Exit(1)
 	}
-	viper.SetDefault("port", 50051)
-	viper.SetDefault("host", "0.0.0.0")
-	viper.SetDefault("tb_cluster_id", 0)
-	viper.SetDefault("tb_addresses", []string{})
-	viper.SetDefault("tb_concurrency_max", 2)
-
-	port := viper.GetInt("port")
-	host := viper.GetString("host")
-	tbClusterId := viper.GetUint64("tb_cluster")
-	tbAddresses := viper.GetStringSlice("tb_addresses")
-	tbConcurrencyMax := viper.GetUint("tb_concurrency_max")
-
-	if len(tbAddresses) == 0 {
+	if len(config.TbAddresses) == 0 {
 		slog.Error("tb_addresses is empty")
 		os.Exit(1)
 	}
 
-	slog.Info("Connecting to tigerbeetle cluster", "addresses:", strings.Join(tbAddresses, ", "))
+	slog.Info("Connecting to tigerbeetle cluster", "addresses:", strings.Join(config.TbAddresses, ", "))
 
 	// Connect to tigerbeetle
-	tb, err := tigerbeetle_go.NewClient(types.ToUint128(tbClusterId), tbAddresses, tbConcurrencyMax)
+	tb, err := tigerbeetle_go.NewClient(types.ToUint128(uint64(config.TbClusterId)), config.TbAddresses, uint(config.TbConcurrencyMax))
 	if err != nil {
 		slog.Error("unable to connect to tigerbeetle:", err)
 		os.Exit(1)
@@ -71,7 +64,7 @@ func main() {
 	r.POST("/account/transfers", s.GetAccountTransfers)
 	r.POST("/account/balances", s.GetAccountBalances)
 
-	slog.Info("server listening at", "host", host, "port", port)
+	slog.Info("server listening at", "host", config.Host, "port", config.Port)
 	defer slog.Info("server exiting")
-	r.Run(fmt.Sprintf("%s:%d", host, port))
+	r.Run(fmt.Sprintf("%s:%d", config.Host, config.Port))
 }

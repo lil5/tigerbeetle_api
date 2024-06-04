@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log/slog"
+	"net/http"
 	"os"
 	"strings"
 
@@ -59,6 +60,7 @@ func main() {
 	s := app.Server{TB: tb}
 	r := gin.New()
 	r.GET("/id", s.GetID)
+	r.GET("/ping", Ping)
 	r.POST("/accounts/create", s.CreateAccounts)
 	r.POST("/transfers/create", s.CreateTransfers)
 	r.POST("/accounts/lookup", s.LookupAccounts)
@@ -69,4 +71,8 @@ func main() {
 	slog.Info("server listening at", "host", config.Host, "port", config.Port)
 	defer slog.Info("server exiting")
 	r.Run(fmt.Sprintf("%s:%d", config.Host, config.Port))
+}
+
+func Ping(c *gin.Context) {
+	c.String(http.StatusOK, "pong")
 }

@@ -36,7 +36,7 @@ func main() {
 		}
 		err := configor.Load(config, files...)
 		if err != nil {
-			slog.Error("fatal error config file:", err)
+			slog.Error("fatal error config file:", "err", err)
 			os.Exit(1)
 		}
 	}
@@ -49,9 +49,9 @@ func main() {
 	slog.Info("Connecting to tigerbeetle cluster", "addresses:", strings.Join(tbAddresses, ", "))
 
 	// Connect to tigerbeetle
-	tb, err := tigerbeetle_go.NewClient(types.ToUint128(uint64(config.TbClusterId)), tbAddresses, uint(config.TbConcurrencyMax))
+	tb, err := tigerbeetle_go.NewClient(types.ToUint128(uint64(config.TbClusterId)), tbAddresses)
 	if err != nil {
-		slog.Error("unable to connect to tigerbeetle:", err)
+		slog.Error("unable to connect to tigerbeetle:", "err", err)
 		os.Exit(1)
 	}
 	defer tb.Close()

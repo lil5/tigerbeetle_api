@@ -4,7 +4,7 @@
 
 A simple REST api server for [TigerBeetle](https://tigerbeetle.com/)
 
-<img width=200 src="https://tigerbeetle.com/60f5f501f4be1be5f45a50a3_img-performance.png">
+<img width=200 src="/screenshot_bruno.webp">
 
 **Rest API:** Tigerbeetle REST API uses 🐶 Bruno
 

@@ -7,7 +7,7 @@ require (
 	github.com/jinzhu/configor v1.2.2
 	github.com/samber/lo v1.46.0
 	github.com/stretchr/testify v1.9.0
-	github.com/tigerbeetle/tigerbeetle-go v0.15.4
+	github.com/tigerbeetle/tigerbeetle-go v0.15.6
 )
 
 require (

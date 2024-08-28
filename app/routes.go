@@ -142,7 +142,7 @@ func (s *Server) CreateTransfers(c *gin.Context) {
 			UserData32:      ud32,
 			Timeout:         0,
 			Ledger:          uint32(inTransfer.Ledger),
-			Code:            uint16(inTransfer.Ledger),
+			Code:            uint16(inTransfer.Code),
 			Flags:           flags.ToUint16(),
 			Timestamp:       0,
 		})

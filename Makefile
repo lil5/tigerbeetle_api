@@ -31,3 +31,6 @@ docker_setup:
 docker_remove:
 	docker compose down -v --remove-orphans
 
+e2e_test:
+	docker compose up -d
+	go test --tags e2e ./...

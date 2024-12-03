@@ -4,7 +4,7 @@ name: tigerbeetle_api
 
 services:
   tigerbeetle:
-    image: ghcr.io/tigerbeetle/tigerbeetle:0.16.0
+    image: ghcr.io/tigerbeetle/tigerbeetle:0.16.16
     volumes:
       - tigerbeetle:/data
     ports:
@@ -16,6 +16,7 @@ services:
       retries: 5
     environment:
       - TB_ADDRESSES=0.0.0.0:3033
+    # command: format --cluster=0 --replica=0 --replica-count=1 /data/0_0.tigerbeetle
     command: start --addresses=0.0.0.0:3033 /data/0_0.tigerbeetle
 
 volumes:

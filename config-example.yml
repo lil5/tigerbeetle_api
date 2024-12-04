@@ -1,5 +1,0 @@
-port: 50051
-
-tb_cluster_id: 0
-tb_addresses: "3033"
-tb_concurrency_max: 2

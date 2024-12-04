@@ -5,7 +5,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"flag"
 	"fmt"
 	"log"
 	"log/slog"
@@ -24,24 +23,21 @@ import (
 	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
 )
 
-const LEDGER = 99
+const (
+	LEDGER        = 99
+	TB_ADDRESSES  = "127.0.0.1:3033"
+	TB_CLUSTER_ID = 0
+)
 
 type MyTestSuite struct {
 	suite.Suite
 	server app.Server
 }
 
-var tbAddresses *string
-var tbClusterId *int
-
 // listen for 'go test' command --> run test methods
 func TestMyTestSuite(t *testing.T) {
-	tbAddresses = flag.String("tb_addresses", "127.0.0.1:3033", "Tigerbeetle server address")
-	tbClusterId = flag.Int("tb_cluster_id", 0, "Tigerbeetle server address")
-	flag.Parse()
-
 	slog.SetLogLoggerLevel(slog.LevelDebug)
-	slog.Info("Starting test", "tbAddresses", *tbAddresses, "tbClusterId", *tbClusterId)
+	slog.Info("Starting test", "TB_ADDRESSES", TB_ADDRESSES, "TB_CLUSTER_ID", TB_CLUSTER_ID)
 
 	suite.Run(t, new(MyTestSuite))
 }
@@ -57,7 +53,7 @@ func (s *MyTestSuite) SetupSuite() {
 	}
 
 	// connect to tigerbeetle server
-	tb, err := tigerbeetle_go.NewClient(types.ToUint128(uint64(*tbClusterId)), strings.Split(*tbAddresses, ","))
+	tb, err := tigerbeetle_go.NewClient(types.ToUint128(uint64(TB_CLUSTER_ID)), strings.Split(TB_ADDRESSES, ","))
 	if err != nil {
 		slog.Error("unable to connect to tigerbeetle:", "err", err)
 		os.Exit(1)

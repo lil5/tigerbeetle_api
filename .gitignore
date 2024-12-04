@@ -2,11 +2,12 @@
 /tigerbeetle_grpc_server
 /tigerbeetle_rest_server
 .task
-config.*.yml
-config.yml
+.*.env
+.env
 /bruno/environments/*.bru
 /build
 
 .DS_Store
+!.example.env
 !/bruno/environments/dev.bru
 !.gitkeep

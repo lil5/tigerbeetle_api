@@ -9,7 +9,8 @@ services:
       - tigerbeetle:/data
     ports:
       - 127.0.0.1:3033:3033
-    privileged: true
+    security_opt:
+      - seccomp:unconfined
     healthcheck:
       test: "netstat -an | grep 3033 > /dev/null; if [ 0 != $? ]; then exit 1; fi;"
       interval: 30s

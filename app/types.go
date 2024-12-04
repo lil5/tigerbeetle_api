@@ -21,6 +21,17 @@ func hexStringToUint128(hex string) (*types.Uint128, error) {
 	return &res, nil
 }
 
+func getOrCreateID(id string) (idStr string, idUint128 types.Uint128, err error) {
+	if id == "" {
+		idUint128 = types.ID()
+		idStr = idUint128.String()
+	} else {
+		idStr = id
+		idUint128, err = types.HexStringToUint128(idStr)
+	}
+	return
+}
+
 // set to zero if timestamp is nil
 func timestampFromPstringToUint(timestamp *string) (*uint64, error) {
 	if timestamp == nil {

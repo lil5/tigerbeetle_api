@@ -11,13 +11,15 @@ type CreateAccountsRequest struct {
 	Accounts []Account `json:"accounts"`
 }
 type CreateAccountsResponse struct {
-	Results []string `json:"results"`
+	AccountIDs []string `json:"account_ids"`
+	Results    []string `json:"results"`
 }
 type CreateTransfersRequest struct {
 	Transfers []Transfer `json:"transfers"`
 }
 type CreateTransfersResponse struct {
-	Results []string `json:"results"`
+	TransferIDs []string `json:"transfer_ids"`
+	Results     []string `json:"results"`
 }
 type LookupAccountsRequest struct {
 	AccountIds []string `json:"account_ids"`

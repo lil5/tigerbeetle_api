@@ -34,13 +34,16 @@ func (s *Server) CreateAccounts(c *gin.Context) {
 		return
 	}
 	accounts := []types.Account{}
+	accountIDs := []string{}
+
 	for _, inAccount := range req.Accounts {
-		// id
-		id, err := hexStringToUint128(inAccount.ID)
+		idStr, idUint128, err := getOrCreateID(inAccount.ID)
 		if err != nil {
 			abort(c, http.StatusInternalServerError, err)
 			return
 		}
+		inAccount.ID = idStr
+		accountIDs = append(accountIDs, inAccount.ID)
 
 		flags := types.AccountFlags{}
 		if inAccount.Flags != nil {
@@ -56,7 +59,7 @@ func (s *Server) CreateAccounts(c *gin.Context) {
 			return
 		}
 		accounts = append(accounts, types.Account{
-			ID:             *id,
+			ID:             idUint128,
 			DebitsPending:  types.ToUint128(uint64(inAccount.DebitsPending)),
 			DebitsPosted:   types.ToUint128(uint64(inAccount.DebitsPosted)),
 			CreditsPending: types.ToUint128(uint64(inAccount.CreditsPending)),
@@ -81,7 +84,8 @@ func (s *Server) CreateAccounts(c *gin.Context) {
 		resArr = append(resArr, r.Result.String())
 	}
 	c.JSON(tbError(resArr), CreateAccountsResponse{
-		Results: resArr,
+		AccountIDs: accountIDs,
+		Results:    resArr,
 	})
 }
 
@@ -95,12 +99,16 @@ func (s *Server) CreateTransfers(c *gin.Context) {
 		return
 	}
 	transfers := []types.Transfer{}
+	transferIDs := []string{}
 	for _, inTransfer := range req.Transfers {
-		id, err := hexStringToUint128(inTransfer.ID)
+		idStr, idUint128, err := getOrCreateID(inTransfer.ID)
 		if err != nil {
 			abort(c, http.StatusInternalServerError, err)
 			return
 		}
+		inTransfer.ID = idStr
+		transferIDs = append(transferIDs, inTransfer.ID)
+
 		flags := types.TransferFlags{}
 		if inTransfer.TransferFlags != nil {
 			flags.Linked = inTransfer.TransferFlags.Linked
@@ -132,7 +140,7 @@ func (s *Server) CreateTransfers(c *gin.Context) {
 			return
 		}
 		transfers = append(transfers, types.Transfer{
-			ID:              *id,
+			ID:              idUint128,
 			DebitAccountID:  *debitAccountID,
 			CreditAccountID: *creditAccountID,
 			Amount:          types.ToUint128(uint64(inTransfer.Amount)),
@@ -159,7 +167,8 @@ func (s *Server) CreateTransfers(c *gin.Context) {
 		resArr = append(resArr, r.Result.String())
 	}
 	c.JSON(tbError(resArr), CreateTransfersResponse{
-		Results: resArr,
+		TransferIDs: transferIDs,
+		Results:     resArr,
 	})
 }
 

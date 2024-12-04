@@ -98,7 +98,7 @@ func (s *MyTestSuite) RunGetID() (string, error) {
 
 func (s *MyTestSuite) TestCalls() {
 	accountID1, _ := s.RunGetID()
-	accountID2, _ := s.RunGetID()
+	var accountID2 string
 	s.Run("CreateAccounts", func() {
 		creditsMustNotExceedDebits := false
 		debitsMustNotExceedCredits := false
@@ -123,10 +123,10 @@ func (s *MyTestSuite) TestCalls() {
 					},
 					"timestamp": time.Now().UTC().Format(time.RFC3339Nano),
 				}, {
-					"user_data_128":   nil,
-					"user_data_64":    nil,
-					"user_data_32":    nil,
-					"id":              accountID2,
+					"user_data_128": nil,
+					"user_data_64":  nil,
+					"user_data_32":  nil,
+					// "id":              "",
 					"debits_pending":  0,
 					"debits_posted":   0,
 					"credits_pending": 0,
@@ -145,8 +145,11 @@ func (s *MyTestSuite) TestCalls() {
 		})
 		s.server.CreateAccounts(c)
 		result := resultFunc()
-
 		s.Equal(http.StatusOK, result.Response.StatusCode, result.Body)
+		json := result.BodyJSON()
+		resAccountIDs := json["account_ids"].([]any)
+		s.Equal(accountID1, resAccountIDs[0].(string))
+		accountID2 = resAccountIDs[1].(string)
 	})
 
 	s.Run("LookupAccounts empty", func() {
@@ -168,34 +171,59 @@ func (s *MyTestSuite) TestCalls() {
 
 	s.Run("CreateTransfer", func() {
 		slog.Info("Creating transfer, take out 10 from account 2 and put 10 in account 1")
-		id, _ := s.RunGetID()
+		id1, _ := s.RunGetID()
 		c, resultFunc := MockGinContext(http.MethodPost, "/", &gin.H{
-			"transfers": []gin.H{{
-				"user_data_128":     nil,
-				"user_data_64":      nil,
-				"user_data_32":      nil,
-				"id":                id,
-				"debit_account_id":  accountID1,
-				"credit_account_id": accountID2,
-				"amount":            10,
-				"pending_id":        nil,
-				"ledger":            LEDGER,
-				"code":              1,
-				"transfer_flags": gin.H{
-					"linked":                false,
-					"pending":               false,
-					"post_pending_transfer": false,
-					"void_pending_transfer": false,
-					"balancing_debit":       false,
-					"balancing_credit":      false,
+			"transfers": []gin.H{
+				{
+					"user_data_128":     nil,
+					"user_data_64":      nil,
+					"user_data_32":      nil,
+					"id":                id1,
+					"debit_account_id":  accountID1,
+					"credit_account_id": accountID2,
+					"amount":            5,
+					"pending_id":        nil,
+					"ledger":            LEDGER,
+					"code":              1,
+					"transfer_flags": gin.H{
+						"linked":                false,
+						"pending":               false,
+						"post_pending_transfer": false,
+						"void_pending_transfer": false,
+						"balancing_debit":       false,
+						"balancing_credit":      false,
+					},
+					"timestamp": time.Now().UTC().Format(time.RFC3339Nano),
 				},
-				"timestamp": time.Now().UTC().Format(time.RFC3339Nano),
-			}},
+				{
+					"user_data_128": nil,
+					"user_data_64":  nil,
+					"user_data_32":  nil,
+					// "id":                "",
+					"debit_account_id":  accountID1,
+					"credit_account_id": accountID2,
+					"amount":            5,
+					"pending_id":        nil,
+					"ledger":            LEDGER,
+					"code":              1,
+					"transfer_flags": gin.H{
+						"linked":                false,
+						"pending":               false,
+						"post_pending_transfer": false,
+						"void_pending_transfer": false,
+						"balancing_debit":       false,
+						"balancing_credit":      false,
+					},
+					"timestamp": time.Now().UTC().Format(time.RFC3339Nano),
+				},
+			},
 		})
 		s.server.CreateTransfers(c)
 		result := resultFunc()
-
 		s.Equal(http.StatusOK, result.Response.StatusCode)
+		json := result.BodyJSON()
+		resTransferIDs := json["transfer_ids"].([]any)
+		s.Equal(id1, resTransferIDs[0].(string))
 	})
 
 	s.Run("LookupAccounts after 1 transfer", func() {

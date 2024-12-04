@@ -32,7 +32,7 @@ $ make docker_setup docker_start
 **3. Copy example config file**
 
 ```
-$ cp config-example.yml config.yml
+$ cp .example.env .env
 ```
 
 **4. Run server with the following command**

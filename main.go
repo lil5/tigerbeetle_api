@@ -26,6 +26,7 @@ const (
 func main() {
 	godotenv.Load()
 
+	isDev := os.Getenv("MODE") == "development"
 	port, _ := strconv.Atoi(os.Getenv("PORT"))
 	if port == 0 {
 		port = defaultPort
@@ -44,18 +45,21 @@ func main() {
 	}
 	tbAddresses := strings.Split(tbAddressesArr, ",")
 
-	slog.Info("Connecting to tigerbeetle cluster", "addresses:", strings.Join(tbAddresses, ", "))
+	slog.Info("Connecting to tigerbeetle cluster", "addresses", strings.Join(tbAddresses, ", "))
 
 	// Connect to tigerbeetle
 	tb, err := tigerbeetle_go.NewClient(types.ToUint128(uint64(tbClusterId)), tbAddresses)
 	if err != nil {
-		slog.Error("unable to connect to tigerbeetle:", "err", err)
+		slog.Error("unable to connect to tigerbeetle", "err", err)
 		os.Exit(1)
 	}
 	defer tb.Close()
 
 	// Create rest server
 	s := app.Server{TB: tb}
+	if !isDev {
+		gin.SetMode(gin.ReleaseMode)
+	}
 	r := gin.New()
 	r.GET("/id", s.GetID)
 	r.GET("/ping", Ping)

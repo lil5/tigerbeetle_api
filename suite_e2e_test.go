@@ -255,21 +255,3 @@ func MockGinContext(method string, url string, bodyJSON *gin.H) (*gin.Context, f
 
 	return c, resultFunc
 }
-
-/*	UserData64:      lo.ToPtr(add.Date.Format(time.RFC3339Nano)),
-	UserData128:     posting.RelatedID,
-	ID:              id,
-	DebitAccountID:  posting.AccountDebit,
-	CreditAccountID: posting.AccountCredit,
-	PendingID:       posting.PendingID,
-	Amount:          posting.Amount,
-	Ledger:          posting.Ledger,
-	Code:            posting.Code,
-	TransferFlags: &TransferFlags{
-		Linked:              i != lastIndexPostings,
-		Pending:             posting.CreatePending,
-		PostPendingTransfer: posting.SubmitPending,
-		VoidPendingTransfer: posting.VoidPending,
-		BalancingDebit:      false,
-		BalancingCredit:     false,
-	},*/

@@ -40,4 +40,4 @@ e2e_test:
 e2e_benchmark:
 	docker compose up -d
 	go build -o tigerbeetle_api .
-	go test --tags e2e --bench . --benchmem --run=^# ./benchmark_e2e_test.go
+	go test --tags e2e --bench . --count 5 --benchmem --run=^# ./benchmark_e2e_test.go

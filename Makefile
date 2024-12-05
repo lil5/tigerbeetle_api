@@ -37,3 +37,7 @@ docker_remove:
 e2e_test:
 	docker compose up -d
 	go test --tags e2e ./...
+e2e_benchmark:
+	docker compose up -d
+	go build -o tigerbeetle_api .
+	go test --tags e2e --bench . --benchmem --run=^# ./benchmark_e2e_test.go

@@ -11,3 +11,4 @@
 !.example.env
 !/bruno/environments/dev.bru
 !.gitkeep
+/tigerbeetle_api

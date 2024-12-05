@@ -1,5 +1,3 @@
-version: "3"
-
 name: tigerbeetle_api
 
 services:

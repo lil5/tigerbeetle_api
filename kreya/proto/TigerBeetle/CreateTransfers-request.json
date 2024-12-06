@@ -1,0 +1,46 @@
+{
+  "transfers": [
+    {
+      "id": "{{ faker.random.uuid }}",
+      "debitAccountId": "{{ faker.random.uuid }}",
+      "creditAccountId": "{{ faker.random.uuid }}",
+      "amount": "734",
+      "pendingId": "{{ faker.random.uuid }}",
+      "userData128": "780",
+      "userData64": "470",
+      "userData32": 154,
+      "ledger": "74",
+      "code": 476,
+      "transferFlags": {
+        "linked": true,
+        "pending": true,
+        "postPendingTransfer": false,
+        "voidPendingTransfer": true,
+        "balancingDebit": false,
+        "balancingCredit": false
+      },
+      "timestamp": "product"
+    },
+    {
+      "id": "{{ faker.random.uuid }}",
+      "debitAccountId": "{{ faker.random.uuid }}",
+      "creditAccountId": "{{ faker.random.uuid }}",
+      "amount": "2",
+      "pendingId": "{{ faker.random.uuid }}",
+      "userData128": "938",
+      "userData64": "505",
+      "userData32": 906,
+      "ledger": "594",
+      "code": 30,
+      "transferFlags": {
+        "linked": false,
+        "pending": true,
+        "postPendingTransfer": false,
+        "voidPendingTransfer": false,
+        "balancingDebit": false,
+        "balancingCredit": true
+      },
+      "timestamp": "synthesize haptic"
+    }
+  ]
+}

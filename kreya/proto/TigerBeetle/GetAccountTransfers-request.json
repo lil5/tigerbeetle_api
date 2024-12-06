@@ -1,0 +1,13 @@
+{
+  "filter": {
+    "accountId": "{{ faker.random.uuid }}",
+    "timestampMin": "synthesizing methodical Home Loan Account",
+    "timestampMax": "deposit Minnesota",
+    "limit": 316,
+    "flags": {
+      "debits": false,
+      "credits": true,
+      "reserved": false
+    }
+  }
+}

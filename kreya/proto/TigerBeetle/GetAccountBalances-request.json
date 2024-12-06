@@ -1,0 +1,13 @@
+{
+  "filter": {
+    "accountId": "{{ faker.random.uuid }}",
+    "timestampMin": "SSL",
+    "timestampMax": "Borders generate indexing",
+    "limit": 274,
+    "flags": {
+      "debits": false,
+      "credits": false,
+      "reserved": false
+    }
+  }
+}

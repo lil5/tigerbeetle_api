@@ -1,0 +1,19 @@
+{
+  "id": "a6b3f73e-f125-4a69-9408-22cd5f2862f4",
+  "importStreams": [
+    {
+      "id": "c6b74e48-8987-4401-8272-58fd5e3060c6",
+      "name": "proto-file",
+      "importerName": "ProtoFile",
+      "createMissingOperations": true,
+      "options": {
+        "files": [
+          "../proto/tigerbeetle.proto"
+        ],
+        "importPaths": []
+      }
+    }
+  ],
+  "authConfigs": [],
+  "certificates": []
+}

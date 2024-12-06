@@ -7,7 +7,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/samber/lo v1.47.0
 	github.com/stretchr/testify v1.10.0
-	github.com/tigerbeetle/tigerbeetle-go v0.16.12
+	github.com/tigerbeetle/tigerbeetle-go v0.16.16
 )
 
 require (

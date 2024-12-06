@@ -2,7 +2,7 @@ name: tigerbeetle_api
 
 services:
   tigerbeetle:
-    image: ghcr.io/tigerbeetle/tigerbeetle:0.16.16
+    image: ghcr.io/tigerbeetle/tigerbeetle:0.16.4
     volumes:
       - tigerbeetle:/data
     ports:

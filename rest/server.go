@@ -27,10 +27,10 @@ func NewServer(tb tigerbeetle_go.Client) {
 	r.POST("/account/transfers", s.GetAccountTransfers)
 	r.POST("/account/balances", s.GetAccountBalances)
 
-	slog.Info("server listening at", "host", os.Getenv("HOST"), "port", os.Getenv("PORT"))
-	defer slog.Info("server exiting")
+	slog.Info("Server listening at", "host", os.Getenv("HOST"), "port", os.Getenv("PORT"))
+	defer slog.Info("Server exiting")
 
-	addr := fmt.Sprintf("%s:%d", os.Getenv("HOST"), os.Getenv("PORT"))
+	addr := fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT"))
 	if os.Getenv("ONLY_IPV4") == "true" {
 		server := &http.Server{Handler: r}
 		l, err := net.Listen("tcp4", addr)

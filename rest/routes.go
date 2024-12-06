@@ -1,4 +1,4 @@
-package app
+package rest
 
 import (
 	"errors"
@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/lil5/tigerbeetle_api/shared"
 	"github.com/samber/lo"
 	tb "github.com/tigerbeetle/tigerbeetle-go"
 	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
@@ -37,7 +38,7 @@ func (s *Server) CreateAccounts(c *gin.Context) {
 	accountIDs := []string{}
 
 	for _, inAccount := range req.Accounts {
-		idStr, idUint128, err := getOrCreateID(inAccount.ID)
+		idStr, idUint128, err := shared.GetOrCreateID(inAccount.ID)
 		if err != nil {
 			abort(c, http.StatusInternalServerError, err)
 			return
@@ -101,7 +102,7 @@ func (s *Server) CreateTransfers(c *gin.Context) {
 	transfers := []types.Transfer{}
 	transferIDs := []string{}
 	for _, inTransfer := range req.Transfers {
-		idStr, idUint128, err := getOrCreateID(inTransfer.ID)
+		idStr, idUint128, err := shared.GetOrCreateID(inTransfer.ID)
 		if err != nil {
 			abort(c, http.StatusInternalServerError, err)
 			return
@@ -119,17 +120,17 @@ func (s *Server) CreateTransfers(c *gin.Context) {
 			flags.BalancingCredit = inTransfer.TransferFlags.BalancingCredit
 		}
 
-		debitAccountID, err := hexStringToUint128(inTransfer.DebitAccountID)
+		debitAccountID, err := shared.HexStringToUint128(inTransfer.DebitAccountID)
 		if err != nil {
 			abort(c, http.StatusInternalServerError, err)
 			return
 		}
-		creditAccountID, err := hexStringToUint128(inTransfer.CreditAccountID)
+		creditAccountID, err := shared.HexStringToUint128(inTransfer.CreditAccountID)
 		if err != nil {
 			abort(c, http.StatusInternalServerError, err)
 			return
 		}
-		pendingID, err := hexStringToUint128(lo.FromPtrOr(inTransfer.PendingID, ""))
+		pendingID, err := shared.HexStringToUint128(lo.FromPtrOr(inTransfer.PendingID, ""))
 		if err != nil {
 			abort(c, http.StatusInternalServerError, err)
 			return
@@ -183,7 +184,7 @@ func (s *Server) LookupAccounts(c *gin.Context) {
 	}
 	ids := []types.Uint128{}
 	for _, inID := range req.AccountIds {
-		id, err := hexStringToUint128(inID)
+		id, err := shared.HexStringToUint128(inID)
 		if err != nil {
 			abort(c, http.StatusInternalServerError, err)
 			return
@@ -215,7 +216,7 @@ func (s *Server) LookupTransfers(c *gin.Context) {
 	}
 	ids := []types.Uint128{}
 	for _, inID := range req.TransferIds {
-		id, err := hexStringToUint128(inID)
+		id, err := shared.HexStringToUint128(inID)
 		if err != nil {
 			abort(c, http.StatusInternalServerError, err)
 			return

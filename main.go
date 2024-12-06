@@ -1,43 +1,30 @@
 package main
 
 import (
-	"fmt"
-	"log"
 	"log/slog"
-	"net"
-	"net/http"
 	"os"
 	"strconv"
 	"strings"
 
 	"github.com/joho/godotenv"
-	"github.com/lil5/tigerbeetle_api/app"
+	"github.com/lil5/tigerbeetle_api/grpc"
+	"github.com/lil5/tigerbeetle_api/rest"
 
-	"github.com/gin-gonic/gin"
 	tigerbeetle_go "github.com/tigerbeetle/tigerbeetle-go"
 	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
-)
-
-const (
-	defaultPort = 8000
-	defaultHost = "0.0.0.0"
 )
 
 func main() {
 	godotenv.Load()
 
-	isDev := os.Getenv("MODE") == "development"
-	port, _ := strconv.Atoi(os.Getenv("PORT"))
-	if port == 0 {
-		port = defaultPort
+	if port, _ := strconv.Atoi(os.Getenv("PORT")); port == 0 {
+		os.Setenv("PORT", "8000")
 	}
 	tbClusterId, _ := strconv.Atoi(os.Getenv("TB_CLUSTER_ID"))
-	host := os.Getenv("HOST")
-	if host == "" {
-		host = defaultHost
+	if host := os.Getenv("HOST"); host == "" {
+		os.Setenv("HOST", "0.0.0.0")
 	}
 	tbAddressesArr := os.Getenv("TB_ADDRESSES")
-	onlyIpv4 := os.Getenv("ONLY_IPV4") == "true"
 
 	if tbAddressesArr == "" {
 		slog.Error("tb_addresses is empty")
@@ -55,37 +42,10 @@ func main() {
 	}
 	defer tb.Close()
 
-	// Create rest server
-	s := app.Server{TB: tb}
-	if !isDev {
-		gin.SetMode(gin.ReleaseMode)
-	}
-	r := gin.New()
-	r.GET("/id", s.GetID)
-	r.GET("/ping", Ping)
-	r.POST("/accounts/create", s.CreateAccounts)
-	r.POST("/transfers/create", s.CreateTransfers)
-	r.POST("/accounts/lookup", s.LookupAccounts)
-	r.POST("/transfers/lookup", s.LookupTransfers)
-	r.POST("/account/transfers", s.GetAccountTransfers)
-	r.POST("/account/balances", s.GetAccountBalances)
-
-	slog.Info("server listening at", "host", host, "port", port)
-	defer slog.Info("server exiting")
-
-	addr := fmt.Sprintf("%s:%d", host, port)
-	if onlyIpv4 {
-		server := &http.Server{Handler: r}
-		l, err := net.Listen("tcp4", addr)
-		if err != nil {
-			log.Fatal(err)
-		}
-		server.Serve(l)
+	// Create server
+	if os.Getenv("USE_GRPC") == "true" {
+		grpc.NewServer(tb)
 	} else {
-		r.Run(addr)
+		rest.NewServer(tb)
 	}
-}
-
-func Ping(c *gin.Context) {
-	c.String(http.StatusOK, "pong")
 }

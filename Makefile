@@ -41,3 +41,10 @@ e2e_benchmark:
 	docker compose up -d
 	go build -o tigerbeetle_api .
 	go test --tags e2e --bench . --count 5 --benchmem --run=^# ./benchmark_e2e_test.go
+
+proto_setup_mac:
+	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+	brew install protobuf
+proto_gen:
+	protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative --experimental_allow_proto3_optional proto/tigerbeetle.proto

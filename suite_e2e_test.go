@@ -17,7 +17,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/lil5/tigerbeetle_api/app"
+	"github.com/lil5/tigerbeetle_api/rest"
 	"github.com/stretchr/testify/suite"
 	tigerbeetle_go "github.com/tigerbeetle/tigerbeetle-go"
 	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
@@ -31,7 +31,7 @@ const (
 
 type MyTestSuite struct {
 	suite.Suite
-	server app.Server
+	server rest.Server
 }
 
 // listen for 'go test' command --> run test methods
@@ -59,7 +59,7 @@ func (s *MyTestSuite) SetupSuite() {
 		os.Exit(1)
 	}
 
-	s.server = app.Server{TB: tb}
+	s.server = rest.Server{TB: tb}
 
 	gin.SetMode(gin.TestMode)
 }

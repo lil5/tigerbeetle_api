@@ -70,13 +70,13 @@ message Account {
   int64	debits_posted = 3;
   int64	credits_pending = 4;
   int64	credits_posted = 5;
-  int64 user_data128 = 6;
+  string user_data128 = 6;
   int64	user_data64 = 7;
   int32	user_data32 = 8;
   int64 ledger = 9;
   int32	code = 10;
   AccountFlags flags = 11;
-  string timestamp = 12;
+  int64 timestamp = 12;
 }
 
 message AccountFlags {
@@ -92,13 +92,13 @@ message Transfer {
   string credit_account_id = 3;
   int64 amount = 4;
   optional string pending_id = 5;
-  int64 user_data128 = 6;
+  string user_data128 = 6;
   int64	user_data64 = 7;
   int32	user_data32 = 8;
   int64 ledger = 9;
   int32 code = 10;
   TransferFlags transfer_flags = 11;
-  optional string timestamp = 13;
+  optional int64 timestamp = 13;
 }
 
 message TransferFlags {
@@ -112,8 +112,8 @@ message TransferFlags {
 
 message AccountFilter {
   string account_id = 1;
-  optional string timestamp_min = 2;
-  optional string timestamp_max = 3;
+  optional int64 timestamp_min = 2;
+  optional int64 timestamp_max = 3;
   int32 limit = 4;
   optional AccountFilterFlags flags      = 5;
 }
@@ -129,5 +129,5 @@ message AccountBalance {
   int64 debits_posted = 2;
   int64 credits_pending = 3;
   int64 credits_posted = 4;
-  string timestamp = 5;
+  int64 timestamp = 5;
 }

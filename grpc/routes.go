@@ -36,6 +36,10 @@ func (s *Server) CreateAccounts(ctx context.Context, in *proto.CreateAccountsReq
 		if err != nil {
 			return nil, err
 		}
+		userData128, err := types.HexStringToUint128(inAccount.UserData128)
+		if err != nil {
+			return nil, err
+		}
 		flags := types.AccountFlags{
 			Linked:                     lo.FromPtrOr(inAccount.Flags.Linked, false),
 			DebitsMustNotExceedCredits: lo.FromPtrOr(inAccount.Flags.DebitsMustNotExceedCredits, false),
@@ -48,7 +52,7 @@ func (s *Server) CreateAccounts(ctx context.Context, in *proto.CreateAccountsReq
 			DebitsPosted:   types.ToUint128(uint64(inAccount.DebitsPosted)),
 			CreditsPending: types.ToUint128(uint64(inAccount.CreditsPending)),
 			CreditsPosted:  types.ToUint128(uint64(inAccount.CreditsPosted)),
-			UserData128:    types.ToUint128(uint64(inAccount.UserData128)),
+			UserData128:    userData128,
 			UserData64:     uint64(inAccount.UserData64),
 			UserData32:     uint32(inAccount.UserData32),
 			Ledger:         uint32(inAccount.Ledger),
@@ -101,13 +105,17 @@ func (s *Server) CreateTransfers(ctx context.Context, in *proto.CreateTransfersR
 		if err != nil {
 			return nil, err
 		}
+		userData128, err := types.HexStringToUint128(inTransfer.UserData128)
+		if err != nil {
+			return nil, err
+		}
 		transfers = append(transfers, types.Transfer{
 			ID:              *id,
 			DebitAccountID:  *debitAccountID,
 			CreditAccountID: *creditAccountID,
 			Amount:          types.ToUint128(uint64(inTransfer.Amount)),
 			PendingID:       *pendingID,
-			UserData128:     types.ToUint128(uint64(inTransfer.UserData128)),
+			UserData128:     userData128,
 			UserData64:      uint64(inTransfer.UserData64),
 			UserData32:      uint32(inTransfer.UserData32),
 			Timeout:         0,

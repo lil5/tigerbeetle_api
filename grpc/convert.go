@@ -1,8 +1,10 @@
 package grpc
 
 import (
+	"errors"
+	"log/slog"
+
 	"github.com/lil5/tigerbeetle_api/proto"
-	"github.com/lil5/tigerbeetle_api/shared"
 	"github.com/samber/lo"
 	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
 )
@@ -63,7 +65,7 @@ func TransferToProtoTransfer(tbTransfer types.Transfer) *proto.Transfer {
 }
 
 func AccountFilterFromProtoToTigerbeetle(pAccountFilter *proto.AccountFilter) (*types.AccountFilter, error) {
-	accountID, err := shared.HexStringToUint128(pAccountFilter.AccountId)
+	accountID, err := HexStringToUint128(pAccountFilter.AccountId)
 	if err != nil {
 		return nil, err
 	}
@@ -94,4 +96,18 @@ func AccountBalanceFromTigerbeetleToProto(tbBalance types.AccountBalance) *proto
 		CreditsPosted:  lo.ToPtr(tbBalance.CreditsPosted.BigInt()).Int64(),
 		Timestamp:      int64(tbBalance.Timestamp),
 	}
+}
+
+func HexStringToUint128(hex string) (*types.Uint128, error) {
+	if hex == "" {
+		return nil, errors.New("missing hex string uint128")
+	}
+
+	res, err := types.HexStringToUint128(hex)
+	if err != nil {
+		slog.Error("hex string to Uint128 failed", "hex", hex, "error", err)
+		return nil, err
+	}
+	return &res, nil
+
 }

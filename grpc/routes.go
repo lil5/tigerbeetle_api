@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/lil5/tigerbeetle_api/proto"
-	"github.com/lil5/tigerbeetle_api/shared"
 
 	"github.com/charithe/timedbuf/v2"
 	"github.com/samber/lo"
@@ -78,7 +77,7 @@ func (s *App) CreateAccounts(ctx context.Context, in *proto.CreateAccountsReques
 	}
 	accounts := []types.Account{}
 	for _, inAccount := range in.Accounts {
-		id, err := shared.HexStringToUint128(inAccount.Id)
+		id, err := HexStringToUint128(inAccount.Id)
 		if err != nil {
 			return nil, err
 		}
@@ -131,7 +130,7 @@ func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequ
 	}
 	transfers := []types.Transfer{}
 	for _, inTransfer := range in.Transfers {
-		id, err := shared.HexStringToUint128(inTransfer.Id)
+		id, err := HexStringToUint128(inTransfer.Id)
 		if err != nil {
 			return nil, err
 		}
@@ -144,15 +143,15 @@ func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequ
 			flags.BalancingDebit = lo.FromPtrOr(inTransfer.TransferFlags.BalancingDebit, false)
 			flags.BalancingCredit = lo.FromPtrOr(inTransfer.TransferFlags.BalancingCredit, false)
 		}
-		debitAccountID, err := shared.HexStringToUint128(inTransfer.DebitAccountId)
+		debitAccountID, err := HexStringToUint128(inTransfer.DebitAccountId)
 		if err != nil {
 			return nil, err
 		}
-		creditAccountID, err := shared.HexStringToUint128(inTransfer.CreditAccountId)
+		creditAccountID, err := HexStringToUint128(inTransfer.CreditAccountId)
 		if err != nil {
 			return nil, err
 		}
-		pendingID, err := shared.HexStringToUint128(lo.FromPtrOr(inTransfer.PendingId, ""))
+		pendingID, err := HexStringToUint128(lo.FromPtrOr(inTransfer.PendingId, ""))
 		if err != nil {
 			return nil, err
 		}
@@ -212,7 +211,7 @@ func (s *App) LookupAccounts(ctx context.Context, in *proto.LookupAccountsReques
 	}
 	ids := []types.Uint128{}
 	for _, inID := range in.AccountIds {
-		id, err := shared.HexStringToUint128(inID)
+		id, err := HexStringToUint128(inID)
 		if err != nil {
 			return nil, err
 		}
@@ -236,7 +235,7 @@ func (s *App) LookupTransfers(ctx context.Context, in *proto.LookupTransfersRequ
 	}
 	ids := []types.Uint128{}
 	for _, inID := range in.TransferIds {
-		id, err := shared.HexStringToUint128(inID)
+		id, err := HexStringToUint128(inID)
 		if err != nil {
 			return nil, err
 		}

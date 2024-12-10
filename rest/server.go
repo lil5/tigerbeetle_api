@@ -19,7 +19,7 @@ func NewServer(tb tigerbeetle_go.Client) {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	r := Router(tb)
-	slog.Info("Server listening at", "host", os.Getenv("HOST"), "port", os.Getenv("PORT"))
+	slog.Info("Rest server listening at", "host", os.Getenv("HOST"), "port", os.Getenv("PORT"))
 	defer slog.Info("Server exiting")
 
 	addr := fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT"))

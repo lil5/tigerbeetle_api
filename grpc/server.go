@@ -19,7 +19,8 @@ func NewServer(tb tigerbeetle_go.Client) {
 		os.Exit(1)
 	}
 	proto.RegisterTigerBeetleServer(s, &Server{TB: tb})
-	slog.Info("Server listening at", "address", lis.Addr())
+
+	slog.Info("GRPC server listening at", "address", lis.Addr())
 	if err := s.Serve(lis); err != nil {
 		slog.Error("Failed to serve:", "error", err)
 		os.Exit(1)

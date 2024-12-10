@@ -1,12 +1,15 @@
 module github.com/lil5/tigerbeetle_api
 
-go 1.22.0
+go 1.23
+
+toolchain go1.23.4
 
 require (
+	github.com/charithe/timedbuf/v2 v2.0.0-20241209145701-0faa62e2b61c
 	github.com/gin-gonic/gin v1.10.0
 	github.com/joho/godotenv v1.5.1
 	github.com/samber/lo v1.47.0
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	github.com/tigerbeetle/tigerbeetle-go v0.16.16
 	google.golang.org/grpc v1.68.1
 	google.golang.org/protobuf v1.34.2

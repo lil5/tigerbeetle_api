@@ -36,7 +36,7 @@ func NewServer(tb tigerbeetle_go.Client) {
 }
 
 func Router(tb tigerbeetle_go.Client) *gin.Engine {
-	s := grpc.Server{TB: tb}
+	s := grpc.NewApp(tb)
 	r := gin.Default()
 	r.GET("/id", grpcHandle(s.GetID))
 	r.GET("/ping", ping)

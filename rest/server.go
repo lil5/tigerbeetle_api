@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"log/slog"
@@ -9,24 +10,15 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/lil5/tigerbeetle_api/grpc"
 	tigerbeetle_go "github.com/tigerbeetle/tigerbeetle-go"
 )
 
 func NewServer(tb tigerbeetle_go.Client) {
-	s := Server{TB: tb}
 	if os.Getenv("MODE") != "development" {
 		gin.SetMode(gin.ReleaseMode)
 	}
-	r := gin.New()
-	r.GET("/id", s.GetID)
-	r.GET("/ping", ping)
-	r.POST("/accounts/create", s.CreateAccounts)
-	r.POST("/transfers/create", s.CreateTransfers)
-	r.POST("/accounts/lookup", s.LookupAccounts)
-	r.POST("/transfers/lookup", s.LookupTransfers)
-	r.POST("/account/transfers", s.GetAccountTransfers)
-	r.POST("/account/balances", s.GetAccountBalances)
-
+	r := Router(tb)
 	slog.Info("Server listening at", "host", os.Getenv("HOST"), "port", os.Getenv("PORT"))
 	defer slog.Info("Server exiting")
 
@@ -43,6 +35,37 @@ func NewServer(tb tigerbeetle_go.Client) {
 	}
 }
 
+func Router(tb tigerbeetle_go.Client) *gin.Engine {
+	s := grpc.Server{TB: tb}
+	r := gin.Default()
+	r.GET("/id", grpcHandle(s.GetID))
+	r.GET("/ping", ping)
+	r.POST("/accounts/create", grpcHandle(s.CreateAccounts))
+	r.POST("/transfers/create", grpcHandle(s.CreateTransfers))
+	r.POST("/accounts/lookup", grpcHandle(s.LookupAccounts))
+	r.POST("/transfers/lookup", grpcHandle(s.LookupTransfers))
+	r.POST("/account/transfers", grpcHandle(s.GetAccountTransfers))
+	r.POST("/account/balances", grpcHandle(s.GetAccountBalances))
+	return r
+}
+
 func ping(c *gin.Context) {
 	c.String(http.StatusOK, "pong")
+}
+
+func grpcHandle[In any, Out any](f func(ctx context.Context, in *In) (out *Out, err error)) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var in In
+		if err := c.ShouldBindBodyWithJSON(&in); err != nil {
+			c.AbortWithError(http.StatusBadRequest, err)
+			return
+		}
+		out, err := f(c.Request.Context(), &in)
+		if err != nil {
+			fmt.Fprint(c.Writer, err.Error())
+			c.AbortWithError(http.StatusInternalServerError, err)
+		}
+
+		c.JSON(http.StatusOK, out)
+	}
 }

@@ -108,14 +108,14 @@ func (s *App) CreateAccounts(ctx context.Context, in *proto.CreateAccountsReques
 		})
 	}
 
-	resp, err := s.TB.CreateAccounts(accounts)
+	results, err := s.TB.CreateAccounts(accounts)
 	if err != nil {
 		return nil, err
 	}
 
-	resArr := []string{}
-	for _, r := range resp {
-		resArr = append(resArr, r.Result.String())
+	resArr := map[int32]proto.CreateAccountsResult{}
+	for _, r := range results {
+		resArr[int32(r.Index)] = proto.CreateAccountsResult(r.Result)
 	}
 	return &proto.CreateAccountsReply{
 		Results: resArr,
@@ -191,9 +191,9 @@ func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequ
 	if err != nil {
 		return nil, err
 	}
-	resArr := []string{}
+	resArr := map[int32]proto.CreateTransferResult{}
 	for _, r := range results {
-		resArr = append(resArr, r.Result.String())
+		resArr[int32(r.Index)] = proto.CreateTransferResult(r.Result)
 	}
 	return &proto.CreateTransfersReply{
 		Results: resArr,

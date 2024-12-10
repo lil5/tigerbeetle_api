@@ -86,11 +86,12 @@ func (s *App) CreateAccounts(ctx context.Context, in *proto.CreateAccountsReques
 		if err != nil {
 			return nil, err
 		}
-		flags := types.AccountFlags{
-			Linked:                     lo.FromPtrOr(inAccount.Flags.Linked, false),
-			DebitsMustNotExceedCredits: lo.FromPtrOr(inAccount.Flags.DebitsMustNotExceedCredits, false),
-			CreditsMustNotExceedDebits: lo.FromPtrOr(inAccount.Flags.CreditsMustNotExceedDebits, false),
-			History:                    lo.FromPtrOr(inAccount.Flags.History, false),
+		flags := types.AccountFlags{}
+		if inAccount.Flags != nil {
+			flags.Linked = lo.FromPtrOr(inAccount.Flags.Linked, false)
+			flags.DebitsMustNotExceedCredits = lo.FromPtrOr(inAccount.Flags.DebitsMustNotExceedCredits, false)
+			flags.CreditsMustNotExceedDebits = lo.FromPtrOr(inAccount.Flags.CreditsMustNotExceedDebits, false)
+			flags.History = lo.FromPtrOr(inAccount.Flags.History, false)
 		}
 		accounts = append(accounts, types.Account{
 			ID:             *id,
@@ -131,13 +132,14 @@ func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequ
 		if err != nil {
 			return nil, err
 		}
-		flags := types.TransferFlags{
-			Linked:              lo.FromPtrOr(inTransfer.TransferFlags.Linked, false),
-			Pending:             lo.FromPtrOr(inTransfer.TransferFlags.Pending, false),
-			PostPendingTransfer: lo.FromPtrOr(inTransfer.TransferFlags.PostPendingTransfer, false),
-			VoidPendingTransfer: lo.FromPtrOr(inTransfer.TransferFlags.VoidPendingTransfer, false),
-			BalancingDebit:      lo.FromPtrOr(inTransfer.TransferFlags.BalancingDebit, false),
-			BalancingCredit:     lo.FromPtrOr(inTransfer.TransferFlags.BalancingCredit, false),
+		flags := types.TransferFlags{}
+		if inTransfer.TransferFlags != nil {
+			flags.Linked = lo.FromPtrOr(inTransfer.TransferFlags.Linked, false)
+			flags.Pending = lo.FromPtrOr(inTransfer.TransferFlags.Pending, false)
+			flags.PostPendingTransfer = lo.FromPtrOr(inTransfer.TransferFlags.PostPendingTransfer, false)
+			flags.VoidPendingTransfer = lo.FromPtrOr(inTransfer.TransferFlags.VoidPendingTransfer, false)
+			flags.BalancingDebit = lo.FromPtrOr(inTransfer.TransferFlags.BalancingDebit, false)
+			flags.BalancingCredit = lo.FromPtrOr(inTransfer.TransferFlags.BalancingCredit, false)
 		}
 		debitAccountID, err := shared.HexStringToUint128(inTransfer.DebitAccountId)
 		if err != nil {

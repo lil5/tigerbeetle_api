@@ -47,4 +47,4 @@ proto_setup_mac:
 	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 	brew install protobuf
 proto_gen:
-	protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative --experimental_allow_proto3_optional proto/tigerbeetle.proto
+	protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative --experimental_allow_proto3_optional proto/*.proto

@@ -21,8 +21,8 @@ const (
 	BENCH_LEDGER        = 98
 	BENCH_TB_ADDRESSES  = "127.0.0.1:3033"
 	BENCH_TB_CLUSTER_ID = 0
-	BENCH_TB_API_PORT   = "8080"
-	BENCH_TB_API_ADDR   = "127.0.0.1:8080"
+	BENCH_TB_API_PORT   = "8001"
+	BENCH_TB_API_ADDR   = "http://127.0.0.1:8001"
 )
 
 func BenchmarkTest(b *testing.B) {
@@ -40,7 +40,7 @@ func BenchmarkTest(b *testing.B) {
 	account1ID := types.ID().String()
 	account2ID := types.ID().String()
 
-	httpRequest(b, http.MethodPost, "http://127.0.0.1:8080/accounts/create", gin.H{
+	httpRequest(b, http.MethodPost, BENCH_TB_API_ADDR+"/accounts/create", gin.H{
 		"accounts": []gin.H{{
 			"user_data_128":   nil,
 			"user_data_64":    nil,
@@ -82,7 +82,7 @@ func BenchmarkTest(b *testing.B) {
 	b.ResetTimer()
 	b.Run("CreateTransfer", func(b *testing.B) {
 		for range b.N {
-			httpRequest(b, http.MethodPost, "http://127.0.0.1:8080/transfers/create", gin.H{
+			httpRequest(b, http.MethodPost, BENCH_TB_API_ADDR+"/transfers/create", gin.H{
 				"transfers": []gin.H{
 					{
 						"user_data_128":     nil,

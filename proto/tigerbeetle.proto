@@ -27,14 +27,21 @@ message CreateAccountsRequest {
   repeated Account accounts = 1;
 }
 message CreateAccountsReply {
-  map<int32,CreateAccountsResult> results = 1;
+  repeated CreateAccountsReplyItem results = 1;
+}
+message CreateAccountsReplyItem {
+  int32 index = 1;
+  CreateAccountResult result = 2;
 }
 message CreateTransfersRequest {
   repeated Transfer transfers = 1;
-
 }
 message CreateTransfersReply {
-  map<int32,CreateTransferResult> results = 1;
+  repeated CreateTransfersReplyItem results = 1;
+}
+message CreateTransfersReplyItem {
+  int32 index = 1;
+  CreateTransferResult result = 2;
 }
 message LookupAccountsRequest {
   repeated string account_ids = 1;
@@ -134,7 +141,7 @@ message AccountBalance {
 
 // Result enums
 
-enum CreateAccountsResult {
+enum CreateAccountResult {
   AccountOK                                    = 0;
 	AccountLinkedEventFailed                     = 1;
 	AccountLinkedEventChainOpen                  = 2;

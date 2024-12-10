@@ -15,7 +15,7 @@ And get started by opening the `/bruno` directory in Bruno.
 
 ## Development setup
 
-**1. Install [taskfile](https://taskfile.dev/installation/) and [golang](https://go.dev/)**
+**1. Install [golang](https://go.dev/)**
 
 **2. Install zig for cross-compilation**
 

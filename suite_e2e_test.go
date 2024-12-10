@@ -19,6 +19,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/lil5/tigerbeetle_api/rest"
 	"github.com/stretchr/testify/suite"
+	"github.com/tidwall/gjson"
 	tigerbeetle_go "github.com/tigerbeetle/tigerbeetle-go"
 	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
 )
@@ -150,8 +151,9 @@ func (s *MyTestSuite) TestCalls() {
 		})
 		result := resultFunc()
 		s.Equal(http.StatusOK, result.Response.StatusCode, result.Body)
-		json := result.BodyJSON()
-		s.Nil(json["results"])
+		json := gjson.Parse(result.Body)
+
+		s.Len(json.Get("results").Array(), 0, result.Body)
 	})
 
 	s.Run("LookupAccounts empty", func() {
@@ -160,14 +162,13 @@ func (s *MyTestSuite) TestCalls() {
 		})
 		result := resultFunc()
 
-		json := result.BodyJSON()
 		s.Equal(http.StatusOK, result.Response.StatusCode)
-		jsonAccounts := json["accounts"].([]any)
-		s.Len(jsonAccounts, 2)
-		s.Nil((jsonAccounts[0].(map[string]any))["debits_posted"])
-		s.Nil((jsonAccounts[0].(map[string]any))["credits_posted"])
-		s.Nil((jsonAccounts[1].(map[string]any))["debits_posted"])
-		s.Nil((jsonAccounts[1].(map[string]any))["credits_posted"])
+		json := gjson.Parse(result.Body)
+		s.Len(json.Get("accounts").Array(), 2)
+		s.Equal(0.0, json.Get("accounts.0.debits_posted").Num)
+		s.Equal(0.0, json.Get("accounts.0.credits_posted").Num)
+		s.Equal(0.0, json.Get("accounts.1.debits_posted").Num)
+		s.Equal(0.0, json.Get("accounts.1.credits_posted").Num)
 	})
 
 	s.Run("CreateTransfer", func() {
@@ -222,8 +223,7 @@ func (s *MyTestSuite) TestCalls() {
 		})
 		result := resultFunc()
 		s.Equal(http.StatusOK, result.Response.StatusCode)
-		json := result.BodyJSON()
-		s.Nil(json["results"])
+		s.Len(gjson.Get(result.Body, "results").Array(), 0)
 	})
 
 	s.Run("LookupAccounts after 1 transfer", func() {
@@ -232,15 +232,14 @@ func (s *MyTestSuite) TestCalls() {
 		})
 		result := resultFunc()
 
-		json := result.BodyJSON()
 		s.Equal(http.StatusOK, result.Response.StatusCode)
-		jsonAccounts := json["accounts"].([]any)
-		s.Len(jsonAccounts, 2)
 
-		s.Equal(10.0, (jsonAccounts[0].(map[string]any))["debits_posted"])
-		s.Nil((jsonAccounts[0].(map[string]any))["credits_posted"])
-		s.Nil((jsonAccounts[1].(map[string]any))["debits_posted"])
-		s.Equal(10.0, (jsonAccounts[1].(map[string]any))["credits_posted"])
+		json := gjson.Parse(result.Body)
+		s.Len(json.Get("accounts").Array(), 2)
+		s.Equal(10.0, json.Get("accounts.0.debits_posted").Num)
+		s.Equal(0.0, json.Get("accounts.0.credits_posted").Num)
+		s.Equal(0.0, json.Get("accounts.1.debits_posted").Num)
+		s.Equal(10.0, json.Get("accounts.1.credits_posted").Num)
 	})
 }
 

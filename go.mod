@@ -10,6 +10,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/samber/lo v1.47.0
 	github.com/stretchr/testify v1.10.0
+	github.com/tidwall/gjson v1.18.0
 	github.com/tigerbeetle/tigerbeetle-go v0.16.16
 	google.golang.org/grpc v1.68.1
 	google.golang.org/protobuf v1.34.2
@@ -36,6 +37,8 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.3 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
+	github.com/tidwall/match v1.1.1 // indirect
+	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	golang.org/x/arch v0.9.0 // indirect

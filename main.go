@@ -18,9 +18,19 @@ func main() {
 	godotenv.Load()
 
 	if port, _ := strconv.Atoi(os.Getenv("PORT")); port == 0 {
-		os.Setenv("PORT", "8000")
+		if os.Getenv("USE_GRPC") == "true" {
+			os.Setenv("PORT", "50051")
+		} else {
+			os.Setenv("PORT", "8000")
+		}
 	}
-	tbClusterId, _ := strconv.Atoi(os.Getenv("TB_CLUSTER_ID"))
+
+	tbClusterIdStr := os.Getenv("TB_CLUSTER_ID")
+	if tbClusterIdStr == "" {
+		tbClusterIdStr = "0"
+	}
+	tbClusterId, _ := strconv.ParseUint(tbClusterIdStr, 10, 64)
+
 	if host := os.Getenv("HOST"); host == "" {
 		os.Setenv("HOST", "0.0.0.0")
 	}
@@ -35,7 +45,7 @@ func main() {
 	slog.Info("Connecting to tigerbeetle cluster", "addresses", strings.Join(tbAddresses, ", "))
 
 	// Connect to tigerbeetle
-	tb, err := tigerbeetle_go.NewClient(types.ToUint128(uint64(tbClusterId)), tbAddresses)
+	tb, err := tigerbeetle_go.NewClient(types.ToUint128(tbClusterId), tbAddresses)
 	if err != nil {
 		slog.Error("unable to connect to tigerbeetle", "err", err)
 		os.Exit(1)

@@ -10,7 +10,6 @@ import (
 	"log/slog"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"os/exec"
 	"strings"
 	"testing"
@@ -22,7 +21,6 @@ import (
 	"github.com/stretchr/testify/suite"
 	"github.com/tidwall/gjson"
 	tigerbeetle_go "github.com/tigerbeetle/tigerbeetle-go"
-	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
 )
 
 const (
@@ -57,16 +55,14 @@ func (s *MyTestSuite) SetupSuite() {
 	}
 
 	// connect to tigerbeetle server
-	tb, err := tigerbeetle_go.NewClient(types.ToUint128(uint64(TB_CLUSTER_ID)), strings.Split(TB_ADDRESSES, ","))
-	if err != nil {
-		slog.Error("unable to connect to tigerbeetle:", "err", err)
-		os.Exit(1)
-	}
+	tbAddresses := strings.Split(TB_ADDRESSES, ",")
+	tbClusterId := uint64(TB_CLUSTER_ID)
 
-	s.tb = tb
+	tbs := grpc.NewTbClientSet(tbAddresses, tbClusterId)
+	defer tbs.Close()
 
 	gin.SetMode(gin.TestMode)
-	s.router, s.app = rest.Router(tb)
+	s.router, s.app = rest.Router(tbs)
 }
 
 // run once, after test suite methods
@@ -74,8 +70,7 @@ func (s *MyTestSuite) TearDownSuite() {
 	log.Println("TearDownSuite()")
 
 	// stop the tb client
-	s.tb.Close()
-	s.app.TimedBuf.Close()
+	s.app.Close()
 	// stop the tb server
 	err := exec.Command("/bin/bash", "-c", "docker compose down").Run()
 	if err != nil {

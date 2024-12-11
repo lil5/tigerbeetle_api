@@ -3,13 +3,9 @@ package grpc
 import (
 	"context"
 	"errors"
-	"os"
-	"strconv"
-	"time"
+	"math/rand/v2"
 
 	"github.com/lil5/tigerbeetle_api/proto"
-
-	"github.com/charithe/timedbuf/v2"
 	"github.com/samber/lo"
 	tb "github.com/tigerbeetle/tigerbeetle-go"
 	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
@@ -29,41 +25,25 @@ type TimedPayload struct {
 	payload []types.Transfer
 }
 
-type App struct {
-	proto.UnimplementedTigerBeetleServer
-	TB       tb.Client
-	TimedBuf *timedbuf.TimedBuf[TimedPayload]
+type AppTBs struct {
+	TB      tb.Client
+	TBs     []tb.Client
+	SizeTBs int64
 }
 
-func NewApp(tb tb.Client) *App {
-	app := &App{TB: tb}
-	if os.Getenv("IS_BUFFERED") == "true" {
-		bufSize, _ := strconv.Atoi(os.Getenv("BUFFER_SIZE"))
-		if bufSize == 0 {
-			bufSize = 1024
-		}
-		bufDelay, err := time.ParseDuration(os.Getenv("BUFFER_DELAY"))
-		if err != nil {
-			bufDelay = 100 * time.Millisecond
-		}
-		app.TimedBuf = timedbuf.New(bufSize, bufDelay, func(payloads []TimedPayload) {
-			// Collect all transfers into one big array
-			transfers := []types.Transfer{}
-			for _, p := range payloads {
-				transfers = append(transfers, p.payload...)
-			}
-
-			results, err := app.TB.CreateTransfers(transfers)
-
-			res := TimedPayloadResponse{
-				Results: results,
-				Error:   err,
-			}
-			for _, p := range payloads {
-				p.c <- res
-			}
-		})
+func (b *AppTBs) Close() {
+	for _, tb := range b.TBs {
+		tb.Close()
 	}
+}
+
+type App struct {
+	proto.UnimplementedTigerBeetleServer
+	AppTBs
+}
+
+func NewApp(tbs AppTBs) *App {
+	app := &App{AppTBs: tbs}
 	return app
 }
 
@@ -176,20 +156,10 @@ func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequ
 		})
 	}
 
-	var results []types.TransferEventResult
-	var err error
-	if s.TimedBuf != nil {
-		c := make(chan TimedPayloadResponse)
-		s.TimedBuf.Put(TimedPayload{
-			c:       c,
-			payload: transfers,
-		})
-		resp := <-c
-		err = resp.Error
-		results = resp.Results
-	} else {
-		results, err = s.TB.CreateTransfers(transfers)
-	}
+	i := rand.Int64N(s.AppTBs.SizeTBs - 1)
+	tb := s.AppTBs.TBs[i]
+	results, err := tb.CreateTransfers(transfers)
+
 	if err != nil {
 		return nil, err
 	}

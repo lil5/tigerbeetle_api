@@ -9,9 +9,6 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/lil5/tigerbeetle_api/grpc"
 	"github.com/lil5/tigerbeetle_api/rest"
-
-	tigerbeetle_go "github.com/tigerbeetle/tigerbeetle-go"
-	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
 )
 
 func main() {
@@ -45,17 +42,13 @@ func main() {
 	slog.Info("Connecting to tigerbeetle cluster", "addresses", strings.Join(tbAddresses, ", "))
 
 	// Connect to tigerbeetle
-	tb, err := tigerbeetle_go.NewClient(types.ToUint128(tbClusterId), tbAddresses)
-	if err != nil {
-		slog.Error("unable to connect to tigerbeetle", "err", err)
-		os.Exit(1)
-	}
-	defer tb.Close()
+	tbs := grpc.NewTbClientSet(tbAddresses, tbClusterId)
+	defer tbs.Close()
 
 	// Create server
 	if os.Getenv("USE_GRPC") == "true" {
-		grpc.NewServer(tb)
+		grpc.NewServer(tbs)
 	} else {
-		rest.NewServer(tb)
+		rest.NewServer(tbs)
 	}
 }

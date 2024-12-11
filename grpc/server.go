@@ -5,16 +5,43 @@ import (
 	"log/slog"
 	"net"
 	"os"
+	"strconv"
 
 	"github.com/lil5/tigerbeetle_api/proto"
+	tb "github.com/tigerbeetle/tigerbeetle-go"
 	tigerbeetle_go "github.com/tigerbeetle/tigerbeetle-go"
+	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
 )
 
-func NewServer(tb tigerbeetle_go.Client) {
+func NewTbClientSet(tbAddresses []string, tbClusterId uint64) AppTBs {
+	clusterUint128 := types.ToUint128(tbClusterId)
+	set := AppTBs{}
+
+	bufSize, _ := strconv.Atoi(os.Getenv("CLIENT_COUNT"))
+	if bufSize < 1 {
+		bufSize = 1
+	}
+
+	tbs := make([]tb.Client, int(bufSize))
+	for i := range bufSize {
+		var err error
+		tbs[i], err = tigerbeetle_go.NewClient(clusterUint128, tbAddresses)
+		if err != nil {
+			slog.Error("unable to connect to tigerbeetle", "err", err)
+			os.Exit(1)
+		}
+	}
+	set.TB = tbs[0]
+	set.TBs = tbs
+	set.SizeTBs = int64(bufSize)
+	return set
+}
+
+func NewServer(tbs AppTBs) {
 	networkType := "tcp"
 	if os.Getenv("ONLY_IPV4") == "true" {
 		networkType = "ipv4"
@@ -25,8 +52,8 @@ func NewServer(tb tigerbeetle_go.Client) {
 		os.Exit(1)
 	}
 	s := grpc.NewServer()
-	app := NewApp(tb)
-	defer app.TimedBuf.Close()
+	app := NewApp(tbs)
+	defer app.Close()
 	proto.RegisterTigerBeetleServer(s, app)
 
 	if os.Getenv("GRPC_HEALTH_SERVER") == "true" {

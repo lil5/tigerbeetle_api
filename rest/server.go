@@ -11,15 +11,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/lil5/tigerbeetle_api/grpc"
-	tigerbeetle_go "github.com/tigerbeetle/tigerbeetle-go"
 )
 
-func NewServer(tb tigerbeetle_go.Client) {
+func NewServer(tbs grpc.AppTBs) {
 	if os.Getenv("MODE") != "development" {
 		gin.SetMode(gin.ReleaseMode)
 	}
-	r, app := Router(tb)
-	defer app.TimedBuf.Close()
+	r, app := Router(tbs)
+	defer app.AppTBs.Close()
 	slog.Info("Rest server listening at", "host", os.Getenv("HOST"), "port", os.Getenv("PORT"))
 	defer slog.Info("Server exiting")
 
@@ -36,8 +35,8 @@ func NewServer(tb tigerbeetle_go.Client) {
 	}
 }
 
-func Router(tb tigerbeetle_go.Client) (*gin.Engine, *grpc.App) {
-	s := grpc.NewApp(tb)
+func Router(tbs grpc.AppTBs) (*gin.Engine, *grpc.App) {
+	s := grpc.NewApp(tbs)
 	r := gin.Default()
 	r.GET("/id", grpcHandle(s.GetID))
 	r.GET("/ping", ping)

@@ -4,7 +4,7 @@ default:
 start:
 	go run .
 
-.PHONY=build
+.PHONY: build
 build:
 	go build .
 

@@ -59,14 +59,14 @@ func TestBenchmarkGhz(t *testing.T) {
 
 	var noBufferTps int64
 
-	t.Run("no buffer", func(t *testing.T) {
+	t.Run("one client", func(t *testing.T) {
 		report := f(t, []string{
 			"PORT=50052",
 			"TB_ADDRESSES=3033",
 			"TB_CLUSTER_ID=0",
 			"USE_GRPC=true",
 			"GRPC_REFLECTION=true",
-			"IS_BUFFERED=false",
+			"CLIENT_COUNT=1",
 			"MODE=production",
 		}, "50052")
 
@@ -76,20 +76,20 @@ func TestBenchmarkGhz(t *testing.T) {
 		t.Logf("report rps: %d", int64(report.Rps))
 	})
 
-	t.Run("buffered", func(t *testing.T) {
+	t.Run("multi client", func(t *testing.T) {
 		report := f(t, []string{
 			"PORT=50053",
 			"TB_ADDRESSES=3033",
 			"TB_CLUSTER_ID=0",
 			"USE_GRPC=true",
 			"GRPC_REFLECTION=true",
-			"IS_BUFFERED=true",
+			"CLIENT_COUNT=20",
 			"BUFFER_SIZE=20",
 			"BUFFER_DELAY=50ms",
 			"MODE=production",
 		}, "50053")
 
-		assert.GreaterOrEqual(t, int64(report.Rps), noBufferTps, "gt no buffer")
+		assert.GreaterOrEqual(t, int64(report.Rps), noBufferTps, "1 gt multiple clients")
 		// assert.GreaterOrEqual(t, int64(report.Rps), int64(200_000), "max traffic requirements")
 		t.Logf("report rps: %d", int64(report.Rps))
 	})

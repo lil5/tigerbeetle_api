@@ -20,10 +20,6 @@ type TimedPayloadResponse struct {
 	Results []types.TransferEventResult
 	Error   error
 }
-type TimedPayload struct {
-	c       chan TimedPayloadResponse
-	payload []types.Transfer
-}
 
 type AppTBs struct {
 	TB      tb.Client

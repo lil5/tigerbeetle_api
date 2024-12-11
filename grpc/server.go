@@ -8,7 +8,6 @@ import (
 	"strconv"
 
 	"github.com/lil5/tigerbeetle_api/proto"
-	tb "github.com/tigerbeetle/tigerbeetle-go"
 	tigerbeetle_go "github.com/tigerbeetle/tigerbeetle-go"
 	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
 	"google.golang.org/grpc"
@@ -26,7 +25,7 @@ func NewTbClientSet(tbAddresses []string, tbClusterId uint64) AppTBs {
 		bufSize = 1
 	}
 
-	tbs := make([]tb.Client, int(bufSize))
+	tbs := make([]tigerbeetle_go.Client, int(bufSize))
 	for i := range bufSize {
 		var err error
 		tbs[i], err = tigerbeetle_go.NewClient(clusterUint128, tbAddresses)

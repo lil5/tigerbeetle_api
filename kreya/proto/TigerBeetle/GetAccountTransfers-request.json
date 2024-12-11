@@ -1,8 +1,8 @@
 {
   "filter": {
-    "accountId": "{{ faker.random.uuid }}",
-    "timestampMin": "synthesizing methodical Home Loan Account",
-    "timestampMax": "deposit Minnesota",
+    "accountId": "{{math.random 1690000000 1700000000}}",
+    "timestampMin": {{math.random 1690000000 1700000000}},
+    "timestampMax": {{math.random 1690000000 1700000000}},
     "limit": 316,
     "flags": {
       "debits": false,

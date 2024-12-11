@@ -1,11 +1,11 @@
 {
   "transfers": [
     {
-      "id": "{{ faker.random.uuid }}",
-      "debitAccountId": "{{ faker.random.uuid }}",
-      "creditAccountId": "{{ faker.random.uuid }}",
+      "id": "{{math.random 1690000000 1700000000}}",
+      "debitAccountId": "{{math.random 1690000000 1700000000}}",
+      "creditAccountId": "{{math.random 1690000000 1700000000}}",
       "amount": "734",
-      "pendingId": "{{ faker.random.uuid }}",
+      "pendingId": "",
       "userData128": "780",
       "userData64": "470",
       "userData32": 154,
@@ -19,14 +19,14 @@
         "balancingDebit": false,
         "balancingCredit": false
       },
-      "timestamp": "product"
+      "timestamp": {{math.random 1690000000 1700000000}}
     },
     {
-      "id": "{{ faker.random.uuid }}",
-      "debitAccountId": "{{ faker.random.uuid }}",
-      "creditAccountId": "{{ faker.random.uuid }}",
+      "id": "{{math.random 1690000000 1700000000}}",
+      "debitAccountId": "{{math.random 1690000000 1700000000}}",
+      "creditAccountId": "{{math.random 1690000000 1700000000}}",
       "amount": "2",
-      "pendingId": "{{ faker.random.uuid }}",
+      "pendingId": "",
       "userData128": "938",
       "userData64": "505",
       "userData32": 906,
@@ -40,7 +40,7 @@
         "balancingDebit": false,
         "balancingCredit": true
       },
-      "timestamp": "synthesize haptic"
+      "timestamp": {{math.random 1690000000 1700000000}}
     }
   ]
 }

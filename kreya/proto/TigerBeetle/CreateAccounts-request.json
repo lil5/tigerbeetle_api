@@ -1,42 +1,42 @@
 {
   "accounts": [
     {
-      "id": "{{ faker.random.uuid }}",
-      "debitsPending": "754",
-      "debitsPosted": "161",
-      "creditsPending": "743",
-      "creditsPosted": "777",
+      "id": "{{math.random 1 1700000000}}",
+      "debitsPending": 0,
+      "debitsPosted": 0,
+      "creditsPending": 0,
+      "creditsPosted": 0,
       "userData128": "130",
-      "userData64": "726",
+      "userData64": 726,
       "userData32": 918,
       "ledger": "861",
       "code": 402,
       "flags": {
-        "linked": true,
+        "linked": false,
         "debitsMustNotExceedCredits": false,
-        "creditsMustNotExceedDebits": true,
+        "creditsMustNotExceedDebits": false,
         "history": true
       },
-      "timestamp": "maximized cross-platform"
+      "timestamp": {{math.random 1690000000 1700000000}}
     },
     {
-      "id": "{{ faker.random.uuid }}",
-      "debitsPending": "942",
-      "debitsPosted": "166",
-      "creditsPending": "732",
-      "creditsPosted": "676",
-      "userData128": "248",
-      "userData64": "171",
+      "id": "{{math.random 1 1700000000}}",
+      "debitsPending": 0,
+      "debitsPosted": 0,
+      "creditsPending": 0,
+      "creditsPosted": 0,
+      "userData128": "",
+      "userData64": 171,
       "userData32": 102,
       "ledger": "430",
       "code": 690,
       "flags": {
         "linked": false,
-        "debitsMustNotExceedCredits": true,
+        "debitsMustNotExceedCredits": false,
         "creditsMustNotExceedDebits": false,
         "history": false
       },
-      "timestamp": "Station"
+      "timestamp": {{math.random 1690000000 1700000000}}
     }
   ]
 }

@@ -1,7 +1,6 @@
 package grpc
 
 import (
-	"errors"
 	"log/slog"
 
 	"github.com/lil5/tigerbeetle_api/proto"
@@ -100,7 +99,7 @@ func AccountBalanceFromTigerbeetleToProto(tbBalance types.AccountBalance) *proto
 
 func HexStringToUint128(hex string) (*types.Uint128, error) {
 	if hex == "" {
-		return nil, errors.New("missing hex string uint128")
+		return &types.Uint128{0}, nil
 	}
 
 	res, err := types.HexStringToUint128(hex)

@@ -48,3 +48,8 @@ proto_setup_mac:
 	brew install protobuf
 proto_gen:
 	protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative --experimental_allow_proto3_optional proto/*.proto
+
+ghz_benchmark_id:
+	ghz --insecure --call proto.TigerBeetle.GetID -d {} -n 500000 --concurrency 20000 --connections=32 localhost:50051
+ghz_benchmark_transfers:
+	ghz --insecure --call proto.TigerBeetle.CreateTransfers --data-file transfers.json -n 500000 --concurrency 20000 --connections=64 localhost:50051

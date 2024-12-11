@@ -18,7 +18,8 @@ func NewServer(tb tigerbeetle_go.Client) {
 	if os.Getenv("MODE") != "development" {
 		gin.SetMode(gin.ReleaseMode)
 	}
-	r := Router(tb)
+	r, app := Router(tb)
+	defer app.TimedBuf.Close()
 	slog.Info("Rest server listening at", "host", os.Getenv("HOST"), "port", os.Getenv("PORT"))
 	defer slog.Info("Server exiting")
 
@@ -35,7 +36,7 @@ func NewServer(tb tigerbeetle_go.Client) {
 	}
 }
 
-func Router(tb tigerbeetle_go.Client) *gin.Engine {
+func Router(tb tigerbeetle_go.Client) (*gin.Engine, *grpc.App) {
 	s := grpc.NewApp(tb)
 	r := gin.Default()
 	r.GET("/id", grpcHandle(s.GetID))
@@ -46,7 +47,7 @@ func Router(tb tigerbeetle_go.Client) *gin.Engine {
 	r.POST("/transfers/lookup", grpcHandle(s.LookupTransfers))
 	r.POST("/account/transfers", grpcHandle(s.GetAccountTransfers))
 	r.POST("/account/balances", grpcHandle(s.GetAccountBalances))
-	return r
+	return r, s
 }
 
 func ping(c *gin.Context) {

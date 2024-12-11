@@ -25,7 +25,9 @@ func NewServer(tb tigerbeetle_go.Client) {
 		os.Exit(1)
 	}
 	s := grpc.NewServer()
-	proto.RegisterTigerBeetleServer(s, NewApp(tb))
+	app := NewApp(tb)
+	defer app.TimedBuf.Close()
+	proto.RegisterTigerBeetleServer(s, app)
 
 	if os.Getenv("GRPC_HEALTH_SERVER") == "true" {
 		healthServer := health.NewServer()

@@ -17,6 +17,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/lil5/tigerbeetle_api/grpc"
 	"github.com/lil5/tigerbeetle_api/rest"
 	"github.com/stretchr/testify/suite"
 	"github.com/tidwall/gjson"
@@ -34,6 +35,7 @@ type MyTestSuite struct {
 	suite.Suite
 	tb     tigerbeetle_go.Client
 	router *gin.Engine
+	app    *grpc.App
 }
 
 // listen for 'go test' command --> run test methods
@@ -64,7 +66,7 @@ func (s *MyTestSuite) SetupSuite() {
 	s.tb = tb
 
 	gin.SetMode(gin.TestMode)
-	s.router = rest.Router(tb)
+	s.router, s.app = rest.Router(tb)
 }
 
 // run once, after test suite methods
@@ -73,6 +75,7 @@ func (s *MyTestSuite) TearDownSuite() {
 
 	// stop the tb client
 	s.tb.Close()
+	s.app.TimedBuf.Close()
 	// stop the tb server
 	err := exec.Command("/bin/bash", "-c", "docker compose down").Run()
 	if err != nil {

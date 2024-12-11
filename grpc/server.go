@@ -15,7 +15,11 @@ import (
 )
 
 func NewServer(tb tigerbeetle_go.Client) {
-	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT")))
+	networkType := "tcp"
+	if os.Getenv("ONLY_IPV4") == "true" {
+		networkType = "ipv4"
+	}
+	lis, err := net.Listen(networkType, fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT")))
 	if err != nil {
 		slog.Error("Failed to listen", "error", err)
 		os.Exit(1)

@@ -1,7 +1,5 @@
 FROM golang:latest
 
-RUN apt install git
-
 WORKDIR /app
 
 ADD . .

@@ -25,7 +25,7 @@ const (
 	BENCH_TB_API_ADDR   = "http://127.0.0.1:8001"
 )
 
-func BenchmarkTest(b *testing.B) {
+func BenchmarkMockHttpTest(b *testing.B) {
 	cmd := exec.Command("./tigerbeetle_api")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stdout
@@ -111,7 +111,7 @@ func BenchmarkTest(b *testing.B) {
 	})
 }
 
-func BenchmarkComparison(b *testing.B) {
+func BenchmarkDirectTbClientComparison(b *testing.B) {
 	tb, _ := tigerbeetle_go.NewClient(types.ToUint128(uint64(BENCH_TB_CLUSTER_ID)), []string{BENCH_TB_ADDRESSES})
 
 	account1ID := types.ID()

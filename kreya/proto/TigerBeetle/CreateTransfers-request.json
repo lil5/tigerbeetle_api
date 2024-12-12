@@ -2,20 +2,20 @@
   "transfers": [
     {
       "id": "{{math.random 1690000000 1700000000}}",
-      "debitAccountId": "{{math.random 1690000000 1700000000}}",
-      "creditAccountId": "{{math.random 1690000000 1700000000}}",
-      "amount": "734",
+      "debitAccountId": "2",
+      "creditAccountId": "3",
+      "amount": 734,
       "pendingId": "",
       "userData128": "780",
-      "userData64": "470",
+      "userData64": 470,
       "userData32": 154,
-      "ledger": "74",
+      "ledger": 999,
       "code": 476,
       "transferFlags": {
         "linked": true,
-        "pending": true,
+        "pending": false,
         "postPendingTransfer": false,
-        "voidPendingTransfer": true,
+        "voidPendingTransfer": false,
         "balancingDebit": false,
         "balancingCredit": false
       },
@@ -23,22 +23,22 @@
     },
     {
       "id": "{{math.random 1690000000 1700000000}}",
-      "debitAccountId": "{{math.random 1690000000 1700000000}}",
-      "creditAccountId": "{{math.random 1690000000 1700000000}}",
-      "amount": "2",
+      "debitAccountId": "2",
+      "creditAccountId": "3",
+      "amount": 2,
       "pendingId": "",
       "userData128": "938",
-      "userData64": "505",
+      "userData64": 505,
       "userData32": 906,
-      "ledger": "594",
+      "ledger": 999,
       "code": 30,
       "transferFlags": {
         "linked": false,
-        "pending": true,
+        "pending": false,
         "postPendingTransfer": false,
         "voidPendingTransfer": false,
         "balancingDebit": false,
-        "balancingCredit": true
+        "balancingCredit": false
       },
       "timestamp": {{math.random 1690000000 1700000000}}
     }

@@ -152,7 +152,10 @@ func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequ
 		})
 	}
 
-	i := rand.Int64N(s.AppTBs.SizeTBs - 1)
+	i := int64(0)
+	if s.AppTBs.SizeTBs > 1 {
+		i = rand.Int64N(s.AppTBs.SizeTBs - 1)
+	}
 	tb := s.AppTBs.TBs[i]
 	results, err := tb.CreateTransfers(transfers)
 

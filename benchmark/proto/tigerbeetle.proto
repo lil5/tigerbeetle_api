@@ -1,0 +1,244 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "tigerbeetle_grpc/proto";
+option java_multiple_files = true;
+option java_package = "nl.last.li.tigerbeetle_grpc.proto";
+option java_outer_classname = "TigerBeetleProto";
+
+service TigerBeetle {
+  rpc GetID (GetIDRequest) returns (GetIDReply) {}
+  rpc CreateAccounts(CreateAccountsRequest) returns (CreateAccountsReply) {}
+  rpc CreateTransfers(CreateTransfersRequest) returns (CreateTransfersReply) {}
+  rpc LookupAccounts(LookupAccountsRequest) returns (LookupAccountsReply) {}
+  rpc LookupTransfers(LookupTransfersRequest) returns (LookupTransfersReply) {}
+  rpc GetAccountTransfers(GetAccountTransfersRequest) returns (GetAccountTransfersReply) {}
+  rpc GetAccountBalances(GetAccountBalancesRequest) returns (GetAccountBalancesReply) {}
+}
+
+message GetIDRequest { 
+}
+message GetIDReply {
+  string id = 1;
+}
+
+message CreateAccountsRequest {
+  repeated Account accounts = 1;
+}
+message CreateAccountsReply {
+  repeated CreateAccountsReplyItem results = 1;
+}
+message CreateAccountsReplyItem {
+  int32 index = 1;
+  CreateAccountResult result = 2;
+}
+message CreateTransfersRequest {
+  repeated Transfer transfers = 1;
+}
+message CreateTransfersReply {
+  repeated CreateTransfersReplyItem results = 1;
+}
+message CreateTransfersReplyItem {
+  int32 index = 1;
+  CreateTransferResult result = 2;
+}
+message LookupAccountsRequest {
+  repeated string account_ids = 1;
+}
+message LookupAccountsReply {
+  repeated Account accounts = 1;
+}
+message LookupTransfersRequest {
+  repeated string transfer_ids = 1;
+}
+message LookupTransfersReply {
+  repeated Transfer transfers = 1;
+}
+message GetAccountTransfersRequest {
+  AccountFilter filter = 1;
+}
+message GetAccountTransfersReply {
+  repeated Transfer transfers = 1;
+}
+message GetAccountBalancesRequest {
+  AccountFilter filter = 1;
+}
+message GetAccountBalancesReply {
+  repeated AccountBalance account_balances = 1;
+}
+
+
+// Types
+// ----------------------------------------------------------------
+message Account {
+  string id = 1;
+  int64 debits_pending = 2;
+  int64	debits_posted = 3;
+  int64	credits_pending = 4;
+  int64	credits_posted = 5;
+  string user_data128 = 6;
+  int64	user_data64 = 7;
+  int32	user_data32 = 8;
+  int64 ledger = 9;
+  int32	code = 10;
+  AccountFlags flags = 11;
+  int64 timestamp = 12;
+}
+
+message AccountFlags {
+  optional bool linked                         = 1;
+  optional bool debits_must_not_exceed_credits = 2;
+  optional bool credits_must_not_exceed_debits = 3;
+  optional bool history                        = 4;
+}
+
+message Transfer {
+  string id = 1;
+  string debit_account_id = 2;
+  string credit_account_id = 3;
+  int64 amount = 4;
+  optional string pending_id = 5;
+  string user_data128 = 6;
+  int64	user_data64 = 7;
+  int32	user_data32 = 8;
+  int64 ledger = 9;
+  int32 code = 10;
+  TransferFlags transfer_flags = 11;
+  optional int64 timestamp = 13;
+}
+
+message TransferFlags {
+  optional bool linked = 1;
+  optional bool pending = 2;
+  optional bool post_pending_transfer = 3;
+  optional bool void_pending_transfer = 4;
+  optional bool balancing_debit = 5;
+  optional bool balancing_credit = 6;
+}
+
+message AccountFilter {
+  string account_id = 1;
+  optional int64 timestamp_min = 2;
+  optional int64 timestamp_max = 3;
+  int32 limit = 4;
+  optional AccountFilterFlags flags      = 5;
+}
+
+message AccountFilterFlags {
+  optional bool debits = 1;                     
+  optional bool credits = 2; 
+  optional bool reserved = 3; 
+}
+
+message AccountBalance {
+  int64 debits_pending = 1;
+  int64 debits_posted = 2;
+  int64 credits_pending = 3;
+  int64 credits_posted = 4;
+  int64 timestamp = 5;
+}
+
+// Result enums
+
+enum CreateAccountResult {
+  AccountOK                                    = 0;
+	AccountLinkedEventFailed                     = 1;
+	AccountLinkedEventChainOpen                  = 2;
+	AccountImportedEventExpected                 = 22;
+	AccountImportedEventNotExpected              = 23;
+	AccountTimestampMustBeZero                   = 3;
+	AccountImportedEventTimestampOutOfRange      = 24;
+	AccountImportedEventTimestampMustNotAdvance  = 25;
+	AccountReservedField                         = 4;
+	AccountReservedFlag                          = 5;
+	AccountIDMustNotBeZero                       = 6;
+	AccountIDMustNotBeIntMax                     = 7;
+	AccountExistsWithDifferentFlags              = 15;
+	AccountExistsWithDifferentUserData128        = 16;
+	AccountExistsWithDifferentUserData64         = 17;
+	AccountExistsWithDifferentUserData32         = 18;
+	AccountExistsWithDifferentLedger             = 19;
+	AccountExistsWithDifferentCode               = 20;
+	AccountExists                                = 21;
+	AccountFlagsAreMutuallyExclusive             = 8;
+	AccountDebitsPendingMustBeZero               = 9;
+	AccountDebitsPostedMustBeZero                = 10;
+	AccountCreditsPendingMustBeZero              = 11;
+	AccountCreditsPostedMustBeZero               = 12;
+	AccountLedgerMustNotBeZero                   = 13;
+	AccountCodeMustNotBeZero                     = 14;
+	AccountImportedEventTimestampMustNotRegress  = 26;
+}
+
+enum CreateTransferResult {
+  TransferOK                                               = 0;
+	TransferLinkedEventFailed                                = 1;
+	TransferLinkedEventChainOpen                             = 2;
+	TransferImportedEventExpected                            = 56;
+	TransferImportedEventNotExpected                         = 57;
+	TransferTimestampMustBeZero                              = 3;
+	TransferImportedEventTimestampOutOfRange                 = 58;
+	TransferImportedEventTimestampMustNotAdvance             = 59;
+	TransferReservedFlag                                     = 4;
+	TransferIDMustNotBeZero                                  = 5;
+	TransferIDMustNotBeIntMax                                = 6;
+	TransferExistsWithDifferentFlags                         = 36;
+	TransferExistsWithDifferentPendingID                     = 40;
+	TransferExistsWithDifferentTimeout                       = 44;
+	TransferExistsWithDifferentDebitAccountID                = 37;
+	TransferExistsWithDifferentCreditAccountID               = 38;
+	TransferExistsWithDifferentAmount                        = 39;
+	TransferExistsWithDifferentUserData128                   = 41;
+	TransferExistsWithDifferentUserData64                    = 42;
+	TransferExistsWithDifferentUserData32                    = 43;
+	TransferExistsWithDifferentLedger                        = 67;
+	TransferExistsWithDifferentCode                          = 45;
+	TransferExists                                           = 46;
+	TransferIDAlreadyFailed                                  = 68;
+	TransferFlagsAreMutuallyExclusive                        = 7;
+	TransferDebitAccountIDMustNotBeZero                      = 8;
+	TransferDebitAccountIDMustNotBeIntMax                    = 9;
+	TransferCreditAccountIDMustNotBeZero                     = 10;
+	TransferCreditAccountIDMustNotBeIntMax                   = 11;
+	TransferAccountsMustBeDifferent                          = 12;
+	TransferPendingIDMustBeZero                              = 13;
+	TransferPendingIDMustNotBeZero                           = 14;
+	TransferPendingIDMustNotBeIntMax                         = 15;
+	TransferPendingIDMustBeDifferent                         = 16;
+	TransferTimeoutReservedForPendingTransfer                = 17;
+	TransferClosingTransferMustBePending                     = 64;
+	TransferAmountMustNotBeZero                              = 18;
+	TransferLedgerMustNotBeZero                              = 19;
+	TransferCodeMustNotBeZero                                = 20;
+	TransferDebitAccountNotFound                             = 21;
+	TransferCreditAccountNotFound                            = 22;
+	TransferAccountsMustHaveTheSameLedger                    = 23;
+	TransferTransferMustHaveTheSameLedgerAsAccounts          = 24;
+	TransferPendingTransferNotFound                          = 25;
+	TransferPendingTransferNotPending                        = 26;
+	TransferPendingTransferHasDifferentDebitAccountID        = 27;
+	TransferPendingTransferHasDifferentCreditAccountID       = 28;
+	TransferPendingTransferHasDifferentLedger                = 29;
+	TransferPendingTransferHasDifferentCode                  = 30;
+	TransferExceedsPendingTransferAmount                     = 31;
+	TransferPendingTransferHasDifferentAmount                = 32;
+	TransferPendingTransferAlreadyPosted                     = 33;
+	TransferPendingTransferAlreadyVoided                     = 34;
+	TransferPendingTransferExpired                           = 35;
+	TransferImportedEventTimestampMustNotRegress             = 60;
+	TransferImportedEventTimestampMustPostdateDebitAccount   = 61;
+	TransferImportedEventTimestampMustPostdateCreditAccount  = 62;
+	TransferImportedEventTimeoutMustBeZero                   = 63;
+	TransferDebitAccountAlreadyClosed                        = 65;
+	TransferCreditAccountAlreadyClosed                       = 66;
+	TransferOverflowsDebitsPending                           = 47;
+	TransferOverflowsCreditsPending                          = 48;
+	TransferOverflowsDebitsPosted                            = 49;
+	TransferOverflowsCreditsPosted                           = 50;
+	TransferOverflowsDebits                                  = 51;
+	TransferOverflowsCredits                                 = 52;
+	TransferOverflowsTimeout                                 = 53;
+	TransferExceedsCredits                                   = 54;
+	TransferExceedsDebits                                    = 55;
+}

@@ -1,0 +1,13 @@
+{
+  "details": {
+    "methodFqn": "proto.TigerBeetle.GetAccountBalances"
+  },
+  "requests": [
+    {
+      "location": "GetAccountBalances-request.json"
+    }
+  ],
+  "operationType": "unary",
+  "invokerName": "grpc",
+  "importStreamId": "c6b74e48-8987-4401-8272-58fd5e3060c6"
+}

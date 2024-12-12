@@ -1,0 +1,13 @@
+{
+  "filter": {
+    "accountId": "{{math.random 1 1700000000}}",
+    "timestampMin": {{math.random 1690000000 1700000000}},
+    "timestampMax": {{math.random 1690000000 1700000000}},
+    "limit": 274,
+    "flags": {
+      "debits": false,
+      "credits": false,
+      "reserved": false
+    }
+  }
+}

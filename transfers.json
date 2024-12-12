@@ -1,0 +1,42 @@
+{
+  "transfers": [
+    {
+      "id": "{{.TimestampUnixNano}}{{.RequestNumber}}",
+      "debit_account_id": "2",
+      "credit_account_id": "3",
+      "amount": 1,
+      "ledger": 999,
+      "code": 1,
+      "transfer_flags": {
+        "linked": false,
+        "pending": false,
+        "post_pending_transfer": false,
+        "void_pending_transfer": false,
+        "balancing_debit": false,
+        "balancing_credit": false
+      },
+      "user_data128": "",
+      "user_data64": 0,
+      "user_data32": 0
+    },
+    {
+      "id": "{{.TimestampUnixNano}}{{add .RequestNumber 1}}",
+      "debit_account_id": "2",
+      "credit_account_id": "3",
+      "amount": 1,
+      "ledger": 999,
+      "code": 1,
+      "transfer_flags": {
+        "linked": false,
+        "pending": false,
+        "post_pending_transfer": false,
+        "void_pending_transfer": false,
+        "balancing_debit": false,
+        "balancing_credit": false
+      },
+      "user_data128": "",
+      "user_data64": 0,
+      "user_data32": 0
+    }
+  ]
+}

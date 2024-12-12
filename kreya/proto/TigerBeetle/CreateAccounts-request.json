@@ -1,0 +1,42 @@
+{
+  "accounts": [
+    {
+      "id": "{{math.random 1 1700000000}}",
+      "debitsPending": 0,
+      "debitsPosted": 0,
+      "creditsPending": 0,
+      "creditsPosted": 0,
+      "userData128": "130",
+      "userData64": 726,
+      "userData32": 918,
+      "ledger": "861",
+      "code": 402,
+      "flags": {
+        "linked": false,
+        "debitsMustNotExceedCredits": false,
+        "creditsMustNotExceedDebits": false,
+        "history": true
+      },
+      "timestamp": {{math.random 1690000000 1700000000}}
+    },
+    {
+      "id": "{{math.random 1 1700000000}}",
+      "debitsPending": 0,
+      "debitsPosted": 0,
+      "creditsPending": 0,
+      "creditsPosted": 0,
+      "userData128": "",
+      "userData64": 171,
+      "userData32": 102,
+      "ledger": "430",
+      "code": 690,
+      "flags": {
+        "linked": false,
+        "debitsMustNotExceedCredits": false,
+        "creditsMustNotExceedDebits": false,
+        "history": false
+      },
+      "timestamp": {{math.random 1690000000 1700000000}}
+    }
+  ]
+}

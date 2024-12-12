@@ -1,4 +1,3 @@
-/proto/*.go
 /tigerbeetle_grpc_server
 /tigerbeetle_rest_server
 .task

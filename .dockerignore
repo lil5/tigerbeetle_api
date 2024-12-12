@@ -1,3 +1,50 @@
 .env
 .*.env
 tigerbeetle_api
+
+.git
+.gitignore
+README.md
+docs/
+*.md
+test/
+*.test.go
+
+# Version control
+.git
+.gitignore
+
+# Documentation and images
+README.md
+*.md
+*.webp
+LICENSE
+
+# Test files
+*_test.go
+suite_e2e_test.go
+benchmark_e2e_test.go
+
+# Development tools and configs
+bruno/
+kreya/
+docker-compose.yml
+Makefile
+
+# Build artifacts
+build/
+
+# TypeScript files (if not needed in the container)
+*.ts
+
+# Environment files
+environments/
+*.bru
+*.krpref
+*.krproj
+*.krop
+
+# Temporary files
+*.swp
+*.swo
+.DS_Store

@@ -8,6 +8,10 @@ start:
 build:
 	go build .
 
+buildexec:
+	go build .
+	./tigerbeetle_api
+
 release: release_darwin_arm64 release_darwin_arm64 release_linux_amd64 release_linux_arm64
 release_linux_amd64:
 	CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -o build/tigerbeetle_api_linux_amd64 main.go

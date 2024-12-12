@@ -5,7 +5,6 @@ go 1.23
 toolchain go1.23.4
 
 require (
-	github.com/charithe/timedbuf/v2 v2.0.0-20241209145701-0faa62e2b61c
 	github.com/gin-gonic/gin v1.10.0
 	github.com/joho/godotenv v1.5.1
 	github.com/samber/lo v1.47.0

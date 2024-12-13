@@ -39,7 +39,7 @@ type App struct {
 
 func (a *App) getRandomTBuf() *timedbuf.TimedBuf[TimedPayload] {
 	if Config.BufferCluster > 1 {
-		i := rand.IntN(Config.BufferCluster) - 1
+		i := rand.IntN(Config.BufferCluster - 1)
 		return a.TBufs[i]
 	} else {
 		return a.TBuf

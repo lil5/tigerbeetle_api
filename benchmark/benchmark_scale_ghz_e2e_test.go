@@ -51,7 +51,7 @@ func TestBenchmarkGhz(t *testing.T) {
 		return report, close
 	}
 
-	var rpsOne int64
+	var rpsBufMulti int64
 
 	t.Run("one client", func(t *testing.T) {
 		report, close := f([]string{
@@ -60,18 +60,23 @@ func TestBenchmarkGhz(t *testing.T) {
 			"TB_CLUSTER_ID=0",
 			"USE_GRPC=true",
 			"GRPC_REFLECTION=true",
-			fmt.Sprintf("CLIENT_COUNT=%d", clientCount),
+			"IS_BUFFERED=true",
+			fmt.Sprintf("BUFFER_CLUSTER=%d", clientCount),
+			"BUFFER_SIZE=100",
+			"BUFFER_DELAY=100ms",
 			"MODE=production",
 		}, "50052")
 		defer close()
 
-		rpsOne = int64(report.Rps)
-		assert.GreaterOrEqual(t, rpsOne, int64(16_000), "m2 traffic maximum")
-		// assert.GreaterOrEqual(t, noBufferTps, int64(200_000), "max traffic requirements")
+		rpsBufMulti = int64(report.Rps)
+		assert.GreaterOrEqual(t, rpsBufMulti, int64(16_000), "m2 traffic maximum")
+		assert.GreaterOrEqual(t, rpsBufMulti, int64(200_000), "max traffic requirements")
 		t.Logf("report rps: %d", int64(report.Rps))
 	})
 
-	t.Run("multi client", func(t *testing.T) {
+	time.Sleep(1 * time.Second)
+
+	t.Run("no buffer", func(t *testing.T) {
 		report, close := f([]string{
 			"PORT=50053",
 			"TB_ADDRESSES=3033",
@@ -80,13 +85,14 @@ func TestBenchmarkGhz(t *testing.T) {
 			"GRPC_REFLECTION=true",
 			"CLIENT_COUNT=1",
 			"MODE=production",
+			"IS_BUFFERED=false",
 		}, "50053")
 		defer close()
 
-		rpsTwo := int64(report.Rps)
-		t.Log("one client", rpsOne)
-		t.Log("multi client", rpsTwo)
-		assert.GreaterOrEqual(t, rpsTwo, rpsOne, "1 gt multiple clients")
+		rpsNoBuf := int64(report.Rps)
+		t.Log("one client", rpsBufMulti)
+		t.Log("multi client", rpsNoBuf)
+		assert.GreaterOrEqual(t, rpsNoBuf, rpsBufMulti, "1 gt multiple clients")
 		// assert.GreaterOrEqual(t, int64(report.Rps), int64(200_000), "max traffic requirements")
 		t.Logf("report rps: %d", int64(report.Rps))
 	})

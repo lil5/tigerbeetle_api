@@ -3,11 +3,15 @@ package grpc
 import (
 	"context"
 	"errors"
+	"log/slog"
 	"math/rand/v2"
+	"os"
 
+	"github.com/charithe/timedbuf/v2"
 	"github.com/lil5/tigerbeetle_api/proto"
 	"github.com/samber/lo"
 	tb "github.com/tigerbeetle/tigerbeetle-go"
+	tigerbeetle_go "github.com/tigerbeetle/tigerbeetle-go"
 	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
 )
 
@@ -20,26 +24,72 @@ type TimedPayloadResponse struct {
 	Results []types.TransferEventResult
 	Error   error
 }
-
-type AppTBs struct {
-	TB      tb.Client
-	TBs     []tb.Client
-	SizeTBs int64
-}
-
-func (b *AppTBs) Close() {
-	for _, tb := range b.TBs {
-		tb.Close()
-	}
+type TimedPayload struct {
+	c         chan TimedPayloadResponse
+	Transfers []types.Transfer
 }
 
 type App struct {
 	proto.UnimplementedTigerBeetleServer
-	AppTBs
+
+	TB tb.Client
+
+	TBuf  *timedbuf.TimedBuf[TimedPayload]
+	TBufs []*timedbuf.TimedBuf[TimedPayload]
 }
 
-func NewApp(tbs AppTBs) *App {
-	app := &App{AppTBs: tbs}
+func (a *App) getRandomTBuf() *timedbuf.TimedBuf[TimedPayload] {
+	if Config.BufferCluster > 1 {
+		i := rand.IntN(Config.BufferCluster - 1)
+		return a.TBufs[i]
+	} else {
+		return a.TBuf
+	}
+}
+
+func (a *App) Close() {
+	for _, b := range a.TBufs {
+		b.Close()
+	}
+	a.TB.Close()
+}
+
+func NewApp() *App {
+	tb, err := tigerbeetle_go.NewClient(types.Uint128{uint8(Config.TbClusterID)}, Config.TbAddresses)
+	if err != nil {
+		slog.Error("unable to connect to tigerbeetle", "err", err)
+		os.Exit(1)
+	}
+
+	var tbuf *timedbuf.TimedBuf[TimedPayload]
+	var tbufs []*timedbuf.TimedBuf[TimedPayload]
+	if Config.IsBuffered {
+		tbufs = make([]*timedbuf.TimedBuf[TimedPayload], Config.BufferCluster)
+		flushFunc := func(payloads []TimedPayload) {
+			transfers := []types.Transfer{}
+			for _, payload := range payloads {
+				transfers = append(transfers, payload.Transfers...)
+			}
+			results, err := tb.CreateTransfers(transfers)
+			res := TimedPayloadResponse{
+				Results: results,
+				Error:   err,
+			}
+			for _, payload := range payloads {
+				payload.c <- res
+			}
+		}
+		for i := range Config.BufferSize {
+			tbufs[i] = timedbuf.New(Config.BufferSize, Config.BufferDelay, flushFunc)
+		}
+		tbuf = tbufs[0]
+	}
+
+	app := &App{
+		TB:    tb,
+		TBuf:  tbuf,
+		TBufs: tbufs,
+	}
 	return app
 }
 
@@ -152,12 +202,21 @@ func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequ
 		})
 	}
 
-	i := int64(0)
-	if s.AppTBs.SizeTBs > 1 {
-		i = rand.Int64N(s.AppTBs.SizeTBs - 1)
+	var results []types.TransferEventResult
+	var err error
+	if Config.IsBuffered {
+		buf := s.getRandomTBuf()
+		c := make(chan TimedPayloadResponse)
+		buf.Put(TimedPayload{
+			c:         c,
+			Transfers: transfers,
+		})
+		res := <-c
+		results = res.Results
+		err = res.Error
+	} else {
+		results, err = s.TB.CreateTransfers(transfers)
 	}
-	tb := s.AppTBs.TBs[i]
-	results, err := tb.CreateTransfers(transfers)
 
 	if err != nil {
 		return nil, err

@@ -1,11 +1,6 @@
 package main
 
 import (
-	"log/slog"
-	"os"
-	"strconv"
-	"strings"
-
 	"github.com/joho/godotenv"
 	"github.com/lil5/tigerbeetle_api/grpc"
 	"github.com/lil5/tigerbeetle_api/rest"
@@ -13,42 +8,10 @@ import (
 
 func main() {
 	godotenv.Load()
-
-	if port, _ := strconv.Atoi(os.Getenv("PORT")); port == 0 {
-		if os.Getenv("USE_GRPC") == "true" {
-			os.Setenv("PORT", "50051")
-		} else {
-			os.Setenv("PORT", "8000")
-		}
-	}
-
-	tbClusterIdStr := os.Getenv("TB_CLUSTER_ID")
-	if tbClusterIdStr == "" {
-		tbClusterIdStr = "0"
-	}
-	tbClusterId, _ := strconv.ParseUint(tbClusterIdStr, 10, 64)
-
-	if host := os.Getenv("HOST"); host == "" {
-		os.Setenv("HOST", "0.0.0.0")
-	}
-	tbAddressesArr := os.Getenv("TB_ADDRESSES")
-
-	if tbAddressesArr == "" {
-		slog.Error("tb_addresses is empty")
-		os.Exit(1)
-	}
-	tbAddresses := strings.Split(tbAddressesArr, ",")
-
-	slog.Info("Connecting to tigerbeetle cluster", "addresses", strings.Join(tbAddresses, ", "))
-
-	// Connect to tigerbeetle
-	tbs := grpc.NewTbClientSet(tbAddresses, tbClusterId)
-	defer tbs.Close()
-
-	// Create server
-	if os.Getenv("USE_GRPC") == "true" {
-		grpc.NewServer(tbs)
+	grpc.NewConfig()
+	if grpc.Config.UseGrpc {
+		grpc.NewServer()
 	} else {
-		rest.NewServer(tbs)
+		rest.NewServer()
 	}
 }

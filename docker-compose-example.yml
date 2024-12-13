@@ -1,0 +1,14 @@
+name: tigerbeetle_api_example
+
+services:
+  tigerbeetle_api:
+    image: ghcr.io/lil5/tigerbeetle_api:c6c39c923958bd64c242f939a851c26fcd2168b6 
+    ports:
+      - 127.0.0.1:50051:50051
+    environment:
+      - PORT=50051
+      - TB_CLUSTER_ID=0
+      - TB_ADDRESSES=35.174.11.166:3000
+      - USE_GRPC=true
+      - GRPC_REFLECTION=true
+      - CLIENT_COUNT=1

@@ -7,23 +7,22 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/lil5/tigerbeetle_api/grpc"
 )
 
-func NewServer(tbs grpc.AppTBs) {
-	if os.Getenv("MODE") != "development" {
+func NewServer() {
+	if grpc.Config.Mode != "development" {
 		gin.SetMode(gin.ReleaseMode)
 	}
-	r, app := Router(tbs)
-	defer app.AppTBs.Close()
-	slog.Info("Rest server listening at", "host", os.Getenv("HOST"), "port", os.Getenv("PORT"))
+	r, app := Router()
+	defer app.Close()
+	slog.Info("Rest server listening at", "host", grpc.Config.Host, "port", grpc.Config.Port)
 	defer slog.Info("Server exiting")
 
-	addr := fmt.Sprintf("%s:%s", os.Getenv("HOST"), os.Getenv("PORT"))
-	if os.Getenv("ONLY_IPV4") == "true" {
+	addr := fmt.Sprintf("%s:%s", grpc.Config.Host, grpc.Config.Port)
+	if grpc.Config.OnlyIpv4 {
 		server := &http.Server{Handler: r}
 		l, err := net.Listen("tcp4", addr)
 		if err != nil {
@@ -35,8 +34,8 @@ func NewServer(tbs grpc.AppTBs) {
 	}
 }
 
-func Router(tbs grpc.AppTBs) (*gin.Engine, *grpc.App) {
-	s := grpc.NewApp(tbs)
+func Router() (*gin.Engine, *grpc.App) {
+	s := grpc.NewApp()
 	r := gin.Default()
 	r.GET("/id", grpcHandle(s.GetID))
 	r.GET("/ping", ping)

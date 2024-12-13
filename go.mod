@@ -20,6 +20,7 @@ require google.golang.org/genproto/googleapis/rpc v0.0.0-20240903143218-8af14fe2
 require (
 	github.com/bytedance/sonic v1.12.5 // indirect
 	github.com/bytedance/sonic/loader v0.2.1 // indirect
+	github.com/charithe/timedbuf/v2 v2.0.0-20241209145701-0faa62e2b61c
 	github.com/cloudwego/base64x v0.1.4 // indirect
 	github.com/cloudwego/iasm v0.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect

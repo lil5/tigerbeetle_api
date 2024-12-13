@@ -10,8 +10,8 @@ import (
 	"log/slog"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"os/exec"
-	"strings"
 	"testing"
 	"time"
 
@@ -26,7 +26,7 @@ import (
 const (
 	LEDGER        = 99
 	TB_ADDRESSES  = "127.0.0.1:3033"
-	TB_CLUSTER_ID = 0
+	TB_CLUSTER_ID = "0"
 )
 
 type MyTestSuite struct {
@@ -54,15 +54,12 @@ func (s *MyTestSuite) SetupSuite() {
 		log.Fatal(err)
 	}
 
-	// connect to tigerbeetle server
-	tbAddresses := strings.Split(TB_ADDRESSES, ",")
-	tbClusterId := uint64(TB_CLUSTER_ID)
-
-	tbs := grpc.NewTbClientSet(tbAddresses, tbClusterId)
-	defer tbs.Close()
+	os.Setenv("TB_ADDRESSES", TB_ADDRESSES)
+	os.Setenv("TB_CLUSTER_ID", TB_CLUSTER_ID)
+	grpc.NewConfig()
 
 	gin.SetMode(gin.TestMode)
-	s.router, s.app = rest.Router(tbs)
+	s.router, s.app = rest.Router()
 }
 
 // run once, after test suite methods

@@ -30,7 +30,7 @@ type config struct {
 	BufferCluster int
 }
 
-func NewConfig() {
+func NewConfig() (ok bool) {
 	useGrpc := os.Getenv("USE_GRPC") == "true"
 
 	if host := os.Getenv("HOST"); host == "" {
@@ -48,7 +48,7 @@ func NewConfig() {
 	tbAddressesArr := os.Getenv("TB_ADDRESSES")
 	if tbAddressesArr == "" {
 		slog.Error("tb_addresses is empty")
-		os.Exit(1)
+		return false
 	}
 	tbAddresses := strings.Split(tbAddressesArr, ",")
 
@@ -67,7 +67,7 @@ func NewConfig() {
 		bufferDelay, err = time.ParseDuration(os.Getenv("BUFFER_DELAY"))
 		if err != nil {
 			slog.Error("BUFFER_DELAY is invalid duration", "error", err)
-			os.Exit(1)
+			return false
 		}
 		bufferCluster, _ = strconv.Atoi(os.Getenv("BUFFER_CLUSTER"))
 		if bufferCluster == 0 {
@@ -94,4 +94,5 @@ func NewConfig() {
 		BufferDelay:   bufferDelay,
 		BufferCluster: bufferCluster,
 	}
+	return true
 }

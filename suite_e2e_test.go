@@ -56,7 +56,10 @@ func (s *MyTestSuite) SetupSuite() {
 
 	os.Setenv("TB_ADDRESSES", TB_ADDRESSES)
 	os.Setenv("TB_CLUSTER_ID", TB_CLUSTER_ID)
-	grpc.NewConfig()
+	if ok := grpc.NewConfig(); !ok {
+		s.FailNow("SetupSuite failed to initialize creating configuration")
+		return
+	}
 
 	gin.SetMode(gin.TestMode)
 	s.router, s.app = rest.Router()

@@ -10,7 +10,6 @@ import (
 	"github.com/charithe/timedbuf/v2"
 	"github.com/lil5/tigerbeetle_api/proto"
 	"github.com/samber/lo"
-	tb "github.com/tigerbeetle/tigerbeetle-go"
 	tigerbeetle_go "github.com/tigerbeetle/tigerbeetle-go"
 	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
 )
@@ -32,7 +31,7 @@ type TimedPayload struct {
 type App struct {
 	proto.UnimplementedTigerBeetleServer
 
-	TB tb.Client
+	TB tigerbeetle_go.Client
 
 	TBuf  *timedbuf.TimedBuf[TimedPayload]
 	TBufs []*timedbuf.TimedBuf[TimedPayload]
@@ -40,7 +39,7 @@ type App struct {
 
 func (a *App) getRandomTBuf() *timedbuf.TimedBuf[TimedPayload] {
 	if Config.BufferCluster > 1 {
-		i := rand.IntN(Config.BufferCluster - 1)
+		i := rand.IntN(Config.BufferCluster) - 1
 		return a.TBufs[i]
 	} else {
 		return a.TBuf
@@ -55,7 +54,7 @@ func (a *App) Close() {
 }
 
 func NewApp() *App {
-	tb, err := tigerbeetle_go.NewClient(types.Uint128{uint8(Config.TbClusterID)}, Config.TbAddresses)
+	tigerbeetle_go, err := tigerbeetle_go.NewClient(types.Uint128{uint8(Config.TbClusterID)}, Config.TbAddresses)
 	if err != nil {
 		slog.Error("unable to connect to tigerbeetle", "err", err)
 		os.Exit(1)
@@ -70,7 +69,7 @@ func NewApp() *App {
 			for _, payload := range payloads {
 				transfers = append(transfers, payload.Transfers...)
 			}
-			results, err := tb.CreateTransfers(transfers)
+			results, err := tigerbeetle_go.CreateTransfers(transfers)
 			res := TimedPayloadResponse{
 				Results: results,
 				Error:   err,
@@ -79,14 +78,14 @@ func NewApp() *App {
 				payload.c <- res
 			}
 		}
-		for i := range Config.BufferSize {
+		for i := range Config.BufferCluster {
 			tbufs[i] = timedbuf.New(Config.BufferSize, Config.BufferDelay, flushFunc)
 		}
 		tbuf = tbufs[0]
 	}
 
 	app := &App{
-		TB:    tb,
+		TB:    tigerbeetle_go,
 		TBuf:  tbuf,
 		TBufs: tbufs,
 	}

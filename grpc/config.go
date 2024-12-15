@@ -28,6 +28,9 @@ type config struct {
 	BufferSize    int
 	BufferDelay   time.Duration
 	BufferCluster int
+
+	PrometheusEnabled bool
+	PrometheusAddr    string
 }
 
 func NewConfig() (ok bool) {
@@ -75,6 +78,15 @@ func NewConfig() (ok bool) {
 		}
 	}
 
+	prometheusEnabled := os.Getenv("PROMETHEUS_ENABLED") == "true"
+	var prometheusAddr string
+	if prometheusEnabled {
+		prometheusAddr = os.Getenv("PROMETHEUS_ADDR")
+		if prometheusAddr == "" {
+			prometheusAddr = ":2112"
+		}
+	}
+
 	Config = config{
 		Host: os.Getenv("HOST"),
 		Port: os.Getenv("PORT"),
@@ -93,6 +105,9 @@ func NewConfig() (ok bool) {
 		BufferSize:    bufferSize,
 		BufferDelay:   bufferDelay,
 		BufferCluster: bufferCluster,
+
+		PrometheusEnabled: prometheusEnabled,
+		PrometheusAddr:    prometheusAddr,
 	}
 	return true
 }

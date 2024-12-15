@@ -6,6 +6,7 @@ import (
 	"net"
 	"os"
 
+	"github.com/lil5/tigerbeetle_api/prometheus"
 	"github.com/lil5/tigerbeetle_api/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
@@ -37,6 +38,12 @@ func NewServer() {
 	if Config.GrpcReflection {
 		reflection.Register(s)
 	}
+
+	prometheusDeferClose := func() {}
+	if Config.PrometheusEnabled {
+		prometheusDeferClose = prometheus.GrpcRegister(s, Config.PrometheusAddr)
+	}
+	defer prometheusDeferClose()
 
 	slog.Info("GRPC server listening at", "address", lis.Addr())
 	if err := s.Serve(lis); err != nil {

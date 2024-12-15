@@ -6,7 +6,7 @@ import (
 	"net"
 	"os"
 
-	"github.com/lil5/tigerbeetle_api/prometheus"
+	"github.com/lil5/tigerbeetle_api/metrics"
 	"github.com/lil5/tigerbeetle_api/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
@@ -41,7 +41,7 @@ func NewServer() {
 
 	prometheusDeferClose := func() {}
 	if Config.PrometheusEnabled {
-		prometheusDeferClose = prometheus.GrpcRegister(s, Config.PrometheusAddr)
+		prometheusDeferClose = metrics.GrpcRegister(s, Config.PrometheusAddr)
 	}
 	defer prometheusDeferClose()
 

@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/charithe/timedbuf/v2"
+	"github.com/lil5/tigerbeetle_api/metrics"
 	"github.com/lil5/tigerbeetle_api/proto"
 	"github.com/samber/lo"
 	tigerbeetle_go "github.com/tigerbeetle/tigerbeetle-go"
@@ -63,11 +64,16 @@ func NewApp() *App {
 	var tbuf *timedbuf.TimedBuf[TimedPayload]
 	var tbufs []*timedbuf.TimedBuf[TimedPayload]
 	if Config.IsBuffered {
-		bufWarnLog := int(float32(Config.BufferSize) * 0.8)
 		tbufs = make([]*timedbuf.TimedBuf[TimedPayload], Config.BufferCluster)
+
+		lenMaxBuf := float64(Config.BufferSize)
+		lenMaxBufSlog := lenMaxBuf * 0.8
 		flushFunc := func(payloads []TimedPayload) {
 			transfers := []types.Transfer{}
-			if lenPayloads := len(payloads); lenPayloads < bufWarnLog {
+			lenPayloads := float64(len(payloads))
+			if Config.PrometheusEnabled {
+				metrics.BufferFullRatio.Add(lenPayloads / lenMaxBuf)
+			} else if lenPayloads < lenMaxBufSlog {
 				slog.Warn("Flushing Buffer", "max buffer", Config.BufferSize, "buffer size collected", lenPayloads)
 			}
 			for _, payload := range payloads {

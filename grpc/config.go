@@ -79,7 +79,7 @@ func NewConfig() (ok bool) {
 
 	prometheusAddr := os.Getenv("PROMETHEUS_ADDR")
 	if prometheusAddr == "" {
-		prometheusAddr = ":2112"
+		prometheusAddr = ":9323"
 	}
 
 	Config = config{

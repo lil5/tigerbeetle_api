@@ -29,8 +29,7 @@ type config struct {
 	BufferDelay   time.Duration
 	BufferCluster int
 
-	PrometheusEnabled bool
-	PrometheusAddr    string
+	PrometheusAddr string
 }
 
 func NewConfig() (ok bool) {
@@ -78,13 +77,9 @@ func NewConfig() (ok bool) {
 		}
 	}
 
-	prometheusEnabled := os.Getenv("PROMETHEUS_ENABLED") == "true"
-	var prometheusAddr string
-	if prometheusEnabled {
-		prometheusAddr = os.Getenv("PROMETHEUS_ADDR")
-		if prometheusAddr == "" {
-			prometheusAddr = ":2112"
-		}
+	prometheusAddr := os.Getenv("PROMETHEUS_ADDR")
+	if prometheusAddr == "" {
+		prometheusAddr = ":2112"
 	}
 
 	Config = config{
@@ -106,8 +101,7 @@ func NewConfig() (ok bool) {
 		BufferDelay:   bufferDelay,
 		BufferCluster: bufferCluster,
 
-		PrometheusEnabled: prometheusEnabled,
-		PrometheusAddr:    prometheusAddr,
+		PrometheusAddr: prometheusAddr,
 	}
 	return true
 }

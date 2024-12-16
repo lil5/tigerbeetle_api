@@ -67,21 +67,17 @@ func NewApp() *App {
 		tbufs = make([]*timedbuf.TimedBuf[TimedPayload], Config.BufferCluster)
 
 		lenMaxBuf := float64(Config.BufferSize)
-		lenMaxBufSlog := lenMaxBuf * 0.8
 		flushFunc := func(payloads []TimedPayload) {
 			transfers := []types.Transfer{}
 			lenPayloads := float64(len(payloads))
 			for _, payload := range payloads {
 				transfers = append(transfers, payload.Transfers...)
 			}
-			if Config.PrometheusEnabled {
-				metrics.TotalBufferCount.Inc()
-				metrics.TotalBufferContents.Add(lenPayloads)
-				metrics.TotalBufferMax.Add(lenMaxBuf)
-				metrics.TotalCreateTransferTx.Add(float64(len(transfers)))
-			} else if lenPayloads < lenMaxBufSlog {
-				slog.Warn("Flushing Buffer", "max buffer", Config.BufferSize, "buffer size collected", lenPayloads)
-			}
+			metrics.TotalBufferCount.Inc()
+			metrics.TotalBufferContents.Add(lenPayloads)
+			metrics.TotalBufferMax.Add(lenMaxBuf)
+			metrics.TotalCreateTransferTx.Add(float64(len(transfers)))
+
 			results, err := tigerbeetle_go.CreateTransfers(transfers)
 			res := TimedPayloadResponse{
 				Results: results,
@@ -110,7 +106,7 @@ func (s *App) GetID(ctx context.Context, in *proto.GetIDRequest) (*proto.GetIDRe
 }
 
 func (s *App) CreateAccounts(ctx context.Context, in *proto.CreateAccountsRequest) (*proto.CreateAccountsReply, error) {
-	metrics.AddTotalRequests(Config.PrometheusEnabled)
+	metrics.TotalRequests.Inc()
 	if len(in.Accounts) == 0 {
 		return nil, ErrZeroAccounts
 	}
@@ -164,7 +160,7 @@ func (s *App) CreateAccounts(ctx context.Context, in *proto.CreateAccountsReques
 }
 
 func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequest) (*proto.CreateTransfersReply, error) {
-	metrics.AddTotalRequests(Config.PrometheusEnabled)
+	metrics.TotalRequests.Inc()
 	if len(in.Transfers) == 0 {
 		return nil, ErrZeroTransfers
 	}
@@ -248,7 +244,7 @@ func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequ
 }
 
 func (s *App) LookupAccounts(ctx context.Context, in *proto.LookupAccountsRequest) (*proto.LookupAccountsReply, error) {
-	metrics.AddTotalRequests(Config.PrometheusEnabled)
+	metrics.TotalRequests.Inc()
 	if len(in.AccountIds) == 0 {
 		return nil, ErrZeroAccounts
 	}
@@ -273,7 +269,7 @@ func (s *App) LookupAccounts(ctx context.Context, in *proto.LookupAccountsReques
 }
 
 func (s *App) LookupTransfers(ctx context.Context, in *proto.LookupTransfersRequest) (*proto.LookupTransfersReply, error) {
-	metrics.AddTotalRequests(Config.PrometheusEnabled)
+	metrics.TotalRequests.Inc()
 	if len(in.TransferIds) == 0 {
 		return nil, ErrZeroTransfers
 	}
@@ -298,7 +294,7 @@ func (s *App) LookupTransfers(ctx context.Context, in *proto.LookupTransfersRequ
 }
 
 func (s *App) GetAccountTransfers(ctx context.Context, in *proto.GetAccountTransfersRequest) (*proto.GetAccountTransfersReply, error) {
-	metrics.AddTotalRequests(Config.PrometheusEnabled)
+	metrics.TotalRequests.Inc()
 	if in.Filter.AccountId == "" {
 		return nil, ErrZeroAccounts
 	}
@@ -318,7 +314,7 @@ func (s *App) GetAccountTransfers(ctx context.Context, in *proto.GetAccountTrans
 }
 
 func (s *App) GetAccountBalances(ctx context.Context, in *proto.GetAccountBalancesRequest) (*proto.GetAccountBalancesReply, error) {
-	metrics.AddTotalRequests(Config.PrometheusEnabled)
+	metrics.TotalRequests.Inc()
 	if in.Filter.AccountId == "" {
 		return nil, ErrZeroAccounts
 	}

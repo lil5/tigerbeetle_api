@@ -39,10 +39,7 @@ func NewServer() {
 		reflection.Register(s)
 	}
 
-	prometheusDeferClose := func() {}
-	if Config.PrometheusEnabled {
-		prometheusDeferClose = metrics.GrpcRegister(s, Config.PrometheusAddr)
-	}
+	prometheusDeferClose := metrics.Register(Config.PrometheusAddr)
 	defer prometheusDeferClose()
 
 	slog.Info("GRPC server listening at", "address", lis.Addr())

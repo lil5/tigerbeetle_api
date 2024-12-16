@@ -21,6 +21,11 @@ var (
 		Help: "Tigerbeetle requests total buffers",
 	})
 
+	TotalCreateTransferTx = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "tigerbeetleapi_create_transfers_tx_total",
+		Help: "Created transfer transactions",
+	})
+
 	TotalRequests = promauto.NewCounter(prometheus.CounterOpts{
 		Name: "tigerbeetleapi_grpc_requests_total",
 		Help: "The total number of grpc requests",

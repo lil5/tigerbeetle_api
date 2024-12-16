@@ -71,15 +71,16 @@ func NewApp() *App {
 		flushFunc := func(payloads []TimedPayload) {
 			transfers := []types.Transfer{}
 			lenPayloads := float64(len(payloads))
+			for _, payload := range payloads {
+				transfers = append(transfers, payload.Transfers...)
+			}
 			if Config.PrometheusEnabled {
 				metrics.TotalBufferCount.Inc()
 				metrics.TotalBufferContents.Add(lenPayloads)
 				metrics.TotalBufferMax.Add(lenMaxBuf)
+				metrics.TotalCreateTransferTx.Add(float64(len(transfers)))
 			} else if lenPayloads < lenMaxBufSlog {
 				slog.Warn("Flushing Buffer", "max buffer", Config.BufferSize, "buffer size collected", lenPayloads)
-			}
-			for _, payload := range payloads {
-				transfers = append(transfers, payload.Transfers...)
 			}
 			results, err := tigerbeetle_go.CreateTransfers(transfers)
 			res := TimedPayloadResponse{

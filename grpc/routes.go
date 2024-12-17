@@ -21,7 +21,7 @@ var (
 )
 
 type TimedPayloadResponse struct {
-	Results []types.TransferEventResult
+	Replies []*proto.CreateTransfersReplyItem
 	Error   error
 }
 type TimedPayload struct {
@@ -94,8 +94,9 @@ func NewApp() *App {
 			metrics.TotalCreateTransferTx.Add(float64(len(transfers)))
 
 			results, err := tigerbeetle_go.CreateTransfers(transfers)
+			replies := ResultsToReply(results, transfers, err)
 			res := TimedPayloadResponse{
-				Results: results,
+				Replies: replies,
 				Error:   err,
 			}
 			for _, payload := range payloads {
@@ -225,8 +226,8 @@ func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequ
 		})
 	}
 
-	var results []types.TransferEventResult
 	var err error
+	replies := []*proto.CreateTransfersReplyItem{}
 	if Config.IsBuffered {
 		buf := s.getRandomTBuf()
 		c := make(chan TimedPayloadResponse)
@@ -236,24 +237,20 @@ func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequ
 			Transfers: transfers,
 		})
 		res := <-c
-		results = res.Results
+		replies = res.Replies
 		err = res.Error
 	} else {
+		var results []types.TransferEventResult
 		results, err = s.TB.CreateTransfers(transfers)
+		replies = ResultsToReply(results, transfers, err)
 	}
 
 	if err != nil {
 		return nil, err
 	}
-	resArr := []*proto.CreateTransfersReplyItem{}
-	for _, r := range results {
-		resArr = append(resArr, &proto.CreateTransfersReplyItem{
-			Index:  int32(r.Index),
-			Result: proto.CreateTransferResult(r.Result),
-		})
-	}
+
 	return &proto.CreateTransfersReply{
-		Results: resArr,
+		Results: replies,
 	}, nil
 }
 

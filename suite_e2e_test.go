@@ -109,18 +109,10 @@ func (s *MyTestSuite) TestCalls() {
 		_, resultFunc := MockGinContext(s.router, http.MethodPost, "/accounts/create", &gin.H{
 			"accounts": []gin.H{
 				{
-					"user_data_128":   nil,
-					"user_data_64":    nil,
-					"user_data_32":    nil,
-					"id":              accountID1,
-					"debits_pending":  0,
-					"debits_posted":   0,
-					"credits_pending": 0,
-					"credits_posted":  0,
-					"ledger":          LEDGER,
-					"code":            1,
+					"id":     accountID1,
+					"ledger": LEDGER,
+					"code":   1,
 					"flags": gin.H{
-						"linked":                         false,
 						"credits_must_not_exceed_debits": creditsMustNotExceedDebits,
 						"debits_must_not_exceed_credits": debitsMustNotExceedCredits,
 						"history":                        true,

@@ -42,6 +42,7 @@ message CreateTransfersReply {
 message CreateTransfersReplyItem {
   int32 index = 1;
   CreateTransferResult result = 2;
+  string id = 3;
 }
 message LookupAccountsRequest {
   repeated string account_ids = 1;

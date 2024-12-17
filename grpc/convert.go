@@ -110,3 +110,15 @@ func HexStringToUint128(hex string) (*types.Uint128, error) {
 	return &res, nil
 
 }
+
+func ResultsToReply(results []types.TransferEventResult, transfers []types.Transfer, err error) (replies []*proto.CreateTransfersReplyItem) {
+	replies = make([]*proto.CreateTransfersReplyItem, len(results))
+	for _, r := range results {
+		replies = append(replies, &proto.CreateTransfersReplyItem{
+			Index:  int32(r.Index),
+			Result: proto.CreateTransferResult(r.Result),
+			Id:     transfers[r.Index].ID.String(),
+		})
+	}
+	return
+}

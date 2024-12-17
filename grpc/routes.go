@@ -157,6 +157,7 @@ func (s *App) CreateAccounts(ctx context.Context, in *proto.CreateAccountsReques
 		})
 	}
 
+	metrics.TotalTbCreateAccountsCall.Inc()
 	results, err := s.TB.CreateAccounts(accounts)
 	if err != nil {
 		return nil, err
@@ -241,6 +242,7 @@ func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequ
 		err = res.Error
 	} else {
 		var results []types.TransferEventResult
+		metrics.TotalTbCreateTransfersCall.Inc()
 		results, err = s.TB.CreateTransfers(transfers)
 		replies = ResultsToReply(results, transfers, err)
 	}
@@ -267,6 +269,7 @@ func (s *App) LookupAccounts(ctx context.Context, in *proto.LookupAccountsReques
 		ids = append(ids, *id)
 	}
 
+	metrics.TotalTbLookupAccountsCall.Inc()
 	res, err := s.TB.LookupAccounts(ids)
 	if err != nil {
 		return nil, err
@@ -291,6 +294,7 @@ func (s *App) LookupTransfers(ctx context.Context, in *proto.LookupTransfersRequ
 		ids = append(ids, *id)
 	}
 
+	metrics.TotalTbLookupTransfersCall.Inc()
 	res, err := s.TB.LookupTransfers(ids)
 	if err != nil {
 		return nil, err
@@ -310,6 +314,7 @@ func (s *App) GetAccountTransfers(ctx context.Context, in *proto.GetAccountTrans
 	if err != nil {
 		return nil, err
 	}
+	metrics.TotalTbGetAccountTransfersCall.Inc()
 	res, err := s.TB.GetAccountTransfers(*tbFilter)
 	if err != nil {
 		return nil, err
@@ -329,6 +334,7 @@ func (s *App) GetAccountBalances(ctx context.Context, in *proto.GetAccountBalanc
 	if err != nil {
 		return nil, err
 	}
+	metrics.TotalTbGetAccountBalancesCall.Inc()
 	res, err := s.TB.GetAccountBalances(*tbFilter)
 	if err != nil {
 		return nil, err

@@ -27,4 +27,28 @@ var (
 		Name: "tigerbeetleapi_create_transfers_tx_total",
 		Help: "Created transfer transactions",
 	})
+
+	TotalTbCreateAccountsCall = promauto.With(Reg).NewCounter(prometheus.CounterOpts{
+		Name: "tigerbeetleapi_tb_create_accounts_total",
+	})
+
+	TotalTbCreateTransfersCall = promauto.With(Reg).NewCounter(prometheus.CounterOpts{
+		Name: "tigerbeetleapi_tb_create_transfers_total",
+	})
+
+	TotalTbLookupAccountsCall = promauto.With(Reg).NewCounter(prometheus.CounterOpts{
+		Name: "tigerbeetleapi_tb_lookup_accounts_total",
+	})
+
+	TotalTbLookupTransfersCall = promauto.With(Reg).NewCounter(prometheus.CounterOpts{
+		Name: "tigerbeetleapi_tb_lookup_transfers_total",
+	})
+
+	TotalTbGetAccountTransfersCall = promauto.With(Reg).NewCounter(prometheus.CounterOpts{
+		Name: "tigerbeetleapi_tb_get_account_transfers_total",
+	})
+
+	TotalTbGetAccountBalancesCall = promauto.With(Reg).NewCounter(prometheus.CounterOpts{
+		Name: "tigerbeetleapi_tb_get_account_balances_total",
+	})
 )

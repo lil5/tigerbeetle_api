@@ -106,7 +106,6 @@ func (s *App) GetID(ctx context.Context, in *proto.GetIDRequest) (*proto.GetIDRe
 }
 
 func (s *App) CreateAccounts(ctx context.Context, in *proto.CreateAccountsRequest) (*proto.CreateAccountsReply, error) {
-	metrics.TotalRequests.Inc()
 	if len(in.Accounts) == 0 {
 		return nil, ErrZeroAccounts
 	}
@@ -160,7 +159,6 @@ func (s *App) CreateAccounts(ctx context.Context, in *proto.CreateAccountsReques
 }
 
 func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequest) (*proto.CreateTransfersReply, error) {
-	metrics.TotalRequests.Inc()
 	if len(in.Transfers) == 0 {
 		return nil, ErrZeroTransfers
 	}
@@ -244,7 +242,6 @@ func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequ
 }
 
 func (s *App) LookupAccounts(ctx context.Context, in *proto.LookupAccountsRequest) (*proto.LookupAccountsReply, error) {
-	metrics.TotalRequests.Inc()
 	if len(in.AccountIds) == 0 {
 		return nil, ErrZeroAccounts
 	}
@@ -269,7 +266,6 @@ func (s *App) LookupAccounts(ctx context.Context, in *proto.LookupAccountsReques
 }
 
 func (s *App) LookupTransfers(ctx context.Context, in *proto.LookupTransfersRequest) (*proto.LookupTransfersReply, error) {
-	metrics.TotalRequests.Inc()
 	if len(in.TransferIds) == 0 {
 		return nil, ErrZeroTransfers
 	}
@@ -294,7 +290,6 @@ func (s *App) LookupTransfers(ctx context.Context, in *proto.LookupTransfersRequ
 }
 
 func (s *App) GetAccountTransfers(ctx context.Context, in *proto.GetAccountTransfersRequest) (*proto.GetAccountTransfersReply, error) {
-	metrics.TotalRequests.Inc()
 	if in.Filter.AccountId == "" {
 		return nil, ErrZeroAccounts
 	}
@@ -314,7 +309,6 @@ func (s *App) GetAccountTransfers(ctx context.Context, in *proto.GetAccountTrans
 }
 
 func (s *App) GetAccountBalances(ctx context.Context, in *proto.GetAccountBalancesRequest) (*proto.GetAccountBalancesReply, error) {
-	metrics.TotalRequests.Inc()
 	if in.Filter.AccountId == "" {
 		return nil, ErrZeroAccounts
 	}

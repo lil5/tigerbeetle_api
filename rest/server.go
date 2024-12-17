@@ -22,7 +22,7 @@ func NewServer() {
 	slog.Info("Rest server listening at", "host", grpc.Config.Host, "port", grpc.Config.Port)
 	defer slog.Info("Server exiting")
 
-	prometheusDeferClose := metrics.Register(grpc.Config.PrometheusAddr)
+	prometheusDeferClose := metrics.Register(grpc.Config.PrometheusAddr, nil)
 	defer prometheusDeferClose()
 
 	addr := fmt.Sprintf("%s:%s", grpc.Config.Host, grpc.Config.Port)

@@ -8,10 +8,13 @@ import (
 
 	"github.com/lil5/tigerbeetle_api/metrics"
 	"github.com/lil5/tigerbeetle_api/proto"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
+
+	grpcprom "github.com/grpc-ecosystem/go-grpc-middleware/providers/prometheus"
 )
 
 func NewServer() {
@@ -39,8 +42,15 @@ func NewServer() {
 		reflection.Register(s)
 	}
 
-	prometheusDeferClose := metrics.Register(Config.PrometheusAddr)
+	prometheusDeferClose := metrics.Register(Config.PrometheusAddr, promhttp.HandlerFor(metrics.Reg, promhttp.HandlerOpts{
+		EnableOpenMetrics: true,
+	}))
 	defer prometheusDeferClose()
+	srvMetrics := grpcprom.NewServerMetrics(grpcprom.WithServerHandlingTimeHistogram(
+		grpcprom.WithHistogramBuckets([]float64{0.001, 0.01, 0.1, 0.3, 0.6, 1, 3, 6, 9, 20, 30, 60, 90, 120}),
+	))
+	metrics.Reg.MustRegister(srvMetrics)
+	srvMetrics.InitializeMetrics(s)
 
 	slog.Info("GRPC server listening at", "address", lis.Addr())
 	if err := s.Serve(lis); err != nil {

@@ -4,12 +4,10 @@ import (
 	"context"
 	"log/slog"
 	"net/http"
-
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-func Register(addr string) func() {
-	http.Handle("/metrics", promhttp.Handler())
+func Register(addr string, h http.Handler) func() {
+	http.Handle("/metrics", h)
 	server := &http.Server{Addr: addr, Handler: nil}
 	slog.Info("Prometheus server listening at", "address", addr, "path", "/metrics")
 	go server.ListenAndServe()

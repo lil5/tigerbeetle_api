@@ -10,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/lil5/tigerbeetle_api/grpc"
+	"github.com/lil5/tigerbeetle_api/metrics"
 )
 
 func NewServer() {
@@ -20,6 +21,9 @@ func NewServer() {
 	defer app.Close()
 	slog.Info("Rest server listening at", "host", grpc.Config.Host, "port", grpc.Config.Port)
 	defer slog.Info("Server exiting")
+
+	prometheusDeferClose := metrics.Register(grpc.Config.PrometheusAddr, nil)
+	defer prometheusDeferClose()
 
 	addr := fmt.Sprintf("%s:%s", grpc.Config.Host, grpc.Config.Port)
 	if grpc.Config.OnlyIpv4 {

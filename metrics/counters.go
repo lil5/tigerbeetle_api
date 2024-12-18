@@ -6,49 +6,47 @@ import (
 )
 
 var (
-	Reg = prometheus.NewRegistry()
-
-	TotalBufferContents = promauto.With(Reg).NewCounter(prometheus.CounterOpts{
+	TotalBufferContents = promauto.NewCounter(prometheus.CounterOpts{
 		Name: "tigerbeetleapi_buffer_contents_total",
 		Help: "Tigerbeetle requests buffered filled size sum",
 	})
 
-	TotalBufferMax = promauto.With(Reg).NewCounter(prometheus.CounterOpts{
+	TotalBufferMax = promauto.NewCounter(prometheus.CounterOpts{
 		Name: "tigerbeetleapi_buffer_max_total",
 		Help: "Tigerbeetle requests buffer max size sum",
 	})
 
-	TotalBufferCount = promauto.With(Reg).NewCounter(prometheus.CounterOpts{
+	TotalBufferCount = promauto.NewCounter(prometheus.CounterOpts{
 		Name: "tigerbeetleapi_buffer_count_total",
 		Help: "Tigerbeetle requests total buffers",
 	})
 
-	TotalCreateTransferTx = promauto.With(Reg).NewCounter(prometheus.CounterOpts{
+	TotalCreateTransferTx = promauto.NewCounter(prometheus.CounterOpts{
 		Name: "tigerbeetleapi_create_transfers_tx_total",
 		Help: "Created transfer transactions",
 	})
 
-	TotalTbCreateAccountsCall = promauto.With(Reg).NewCounter(prometheus.CounterOpts{
+	TotalTbCreateAccountsCall = promauto.NewCounter(prometheus.CounterOpts{
 		Name: "tigerbeetleapi_tb_create_accounts_total",
 	})
 
-	TotalTbCreateTransfersCall = promauto.With(Reg).NewCounter(prometheus.CounterOpts{
+	TotalTbCreateTransfersCall = promauto.NewCounter(prometheus.CounterOpts{
 		Name: "tigerbeetleapi_tb_create_transfers_total",
 	})
 
-	TotalTbLookupAccountsCall = promauto.With(Reg).NewCounter(prometheus.CounterOpts{
+	TotalTbLookupAccountsCall = promauto.NewCounter(prometheus.CounterOpts{
 		Name: "tigerbeetleapi_tb_lookup_accounts_total",
 	})
 
-	TotalTbLookupTransfersCall = promauto.With(Reg).NewCounter(prometheus.CounterOpts{
+	TotalTbLookupTransfersCall = promauto.NewCounter(prometheus.CounterOpts{
 		Name: "tigerbeetleapi_tb_lookup_transfers_total",
 	})
 
-	TotalTbGetAccountTransfersCall = promauto.With(Reg).NewCounter(prometheus.CounterOpts{
+	TotalTbGetAccountTransfersCall = promauto.NewCounter(prometheus.CounterOpts{
 		Name: "tigerbeetleapi_tb_get_account_transfers_total",
 	})
 
-	TotalTbGetAccountBalancesCall = promauto.With(Reg).NewCounter(prometheus.CounterOpts{
+	TotalTbGetAccountBalancesCall = promauto.NewCounter(prometheus.CounterOpts{
 		Name: "tigerbeetleapi_tb_get_account_balances_total",
 	})
 )

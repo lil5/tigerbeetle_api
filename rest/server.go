@@ -11,6 +11,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/lil5/tigerbeetle_api/grpc"
 	"github.com/lil5/tigerbeetle_api/metrics"
+
+	metrics_prometheus "github.com/slok/go-http-metrics/metrics/prometheus"
+	"github.com/slok/go-http-metrics/middleware"
+	ginmiddleware "github.com/slok/go-http-metrics/middleware/gin"
 )
 
 func NewServer() {
@@ -22,7 +26,12 @@ func NewServer() {
 	slog.Info("Rest server listening at", "host", grpc.Config.Host, "port", grpc.Config.Port)
 	defer slog.Info("Server exiting")
 
-	prometheusDeferClose := metrics.Register(grpc.Config.PrometheusAddr, nil)
+	mdlw := middleware.New(middleware.Config{
+		Recorder: metrics_prometheus.NewRecorder(metrics_prometheus.Config{}),
+	})
+	r.Use(ginmiddleware.Handler("", mdlw))
+
+	prometheusDeferClose := metrics.Register(grpc.Config.PrometheusAddr)
 	defer prometheusDeferClose()
 
 	addr := fmt.Sprintf("%s:%s", grpc.Config.Host, grpc.Config.Port)

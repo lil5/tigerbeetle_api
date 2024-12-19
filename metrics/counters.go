@@ -14,7 +14,7 @@ var (
 		Name: "tigerbeetleapi_buffer_contents_lt80_total",
 		Help: "Tigerbeetle buffer filled size is less than 80%",
 	})
-	TotalBufferContentsGt80 = promauto.NewCounter(prometheus.CounterOpts{
+	TotalBufferContentsGte80 = promauto.NewCounter(prometheus.CounterOpts{
 		Name: "tigerbeetleapi_buffer_contents_gte80_total",
 		Help: "Tigerbeetle buffer filled size is greater than or equal to 80%",
 	})

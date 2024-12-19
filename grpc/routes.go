@@ -95,7 +95,7 @@ func NewApp() *App {
 			if lenPayloads == bufSizeFull {
 				metrics.TotalBufferContentsFull.Inc()
 			} else if lenPayloads >= bufSize80 {
-				metrics.TotalBufferContentsGt80.Inc()
+				metrics.TotalBufferContentsGte80.Inc()
 			} else {
 				metrics.TotalBufferContentsLt80.Inc()
 			}

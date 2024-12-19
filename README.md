@@ -26,7 +26,7 @@ $ brew install zig
 Setup and run tigerbeetle in docker (optional)
 
 ```
-$ make docker_setup docker_start
+$ make docker-setup docker-start
 ```
 
 **3. Copy example config file**

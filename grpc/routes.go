@@ -181,14 +181,12 @@ func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequ
 	if len(in.Transfers) == 0 {
 		return nil, ErrZeroTransfers
 	}
-	currentIds := make([]string, len(in.Transfers))
 	transfers := []types.Transfer{}
-	for i, inTransfer := range in.Transfers {
+	for _, inTransfer := range in.Transfers {
 		id, err := HexStringToUint128(inTransfer.Id)
 		if err != nil {
 			return nil, err
 		}
-		currentIds[i] = inTransfer.Id
 		flags := types.TransferFlags{}
 		if inTransfer.TransferFlags != nil {
 			flags.Linked = lo.FromPtrOr(inTransfer.TransferFlags.Linked, false)

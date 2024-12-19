@@ -245,6 +245,7 @@ func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequ
 	} else {
 		var results []types.TransferEventResult
 		metrics.TotalTbCreateTransfersCall.Inc()
+		metrics.TotalCreateTransferTx.Add(float64(len(transfers)))
 		results, err = s.TB.CreateTransfers(transfers)
 		replies = ResultsToReply(results, transfers, err)
 		metrics.TotalCreateTransferTxErr.Add(float64(len(replies)))

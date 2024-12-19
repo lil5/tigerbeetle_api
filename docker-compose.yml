@@ -16,6 +16,15 @@ services:
       retries: 5
     # command: format --cluster=0 --replica=0 --replica-count=1 /data/0_0.tigerbeetle
     command: start --addresses=0.0.0.0:3033 /data/0_0.tigerbeetle
+  prometheus:
+    image: prom/prometheus
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:9090:9090'
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-storage:/prometheus
 
 volumes:
   tigerbeetle:
+  prometheus-storage:

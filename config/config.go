@@ -31,6 +31,8 @@ type config struct {
 	BufferDelay   time.Duration
 	BufferCluster int
 
+	IsDryRun bool
+
 	PrometheusAddr string
 }
 
@@ -103,6 +105,8 @@ func NewConfig() (ok bool) {
 		BufferSize:    bufferSize,
 		BufferDelay:   bufferDelay,
 		BufferCluster: bufferCluster,
+
+		IsDryRun: os.Getenv("IS_DRY_RUN") == "true",
 
 		PrometheusAddr: prometheusAddr,
 	}

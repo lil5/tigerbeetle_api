@@ -167,6 +167,9 @@ func (s *App) CreateAccounts(ctx context.Context, in *proto.CreateAccountsReques
 	}
 
 	metrics.TotalTbCreateAccountsCall.Inc()
+	if config.Config.IsDryRun {
+		return &proto.CreateAccountsReply{}, nil
+	}
 	results, err := s.TB.CreateAccounts(accounts)
 	if err != nil {
 		return nil, err
@@ -254,6 +257,9 @@ func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequ
 		var results []types.TransferEventResult
 		metrics.TotalTbCreateTransfersCall.Inc()
 		metrics.TotalCreateTransferTx.Add(float64(len(transfers)))
+		if config.Config.IsDryRun {
+			return &proto.CreateTransfersReply{}, nil
+		}
 		results, err = s.TB.CreateTransfers(transfers)
 		replies = ResultsToReply(results, transfers, err)
 		metrics.TotalCreateTransferTxErr.Add(float64(len(replies)))

@@ -6,10 +6,11 @@ start:
 
 .PHONY: build
 build:
+	go generate ./...
 	go build .
 
 buildexec:
-	go build .
+	make build
 	./tigerbeetle_api
 
 release: release-darwin-arm64 release-darwin-arm64 release-linux-amd64 release-linux-arm64

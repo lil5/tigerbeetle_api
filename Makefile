@@ -6,7 +6,7 @@ start:
 
 .PHONY: build
 build:
-	go generate ./...
+	printf %s $$(git rev-parse HEAD) > config/VERSION.txt
 	go build .
 
 buildexec:

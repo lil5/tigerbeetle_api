@@ -19,9 +19,6 @@ ENV CGO_ENABLED=1 CC="zig cc"
 # Build the Go application
 RUN --mount=type=cache,target=/go/pkg/mod \
    --mount=type=cache,target=/root/.cache/go-build \
-   go generate ./...
-RUN --mount=type=cache,target=/go/pkg/mod \
-   --mount=type=cache,target=/root/.cache/go-build \
    go build -o tigerbeetle_api .
 
 

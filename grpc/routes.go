@@ -59,7 +59,7 @@ func (a *App) Close() {
 const TB_MAX_BATCH_SIZE = 8190
 
 func NewApp() *App {
-	tigerbeetle_go, err := tigerbeetle_go.NewClient(types.Uint128{uint8(config.Config.TbClusterID)}, config.Config.TbAddresses)
+	tb, err := tigerbeetle_go.NewClient(types.Uint128{uint8(config.Config.TbClusterID)}, config.Config.TbAddresses)
 	if err != nil {
 		slog.Error("unable to connect to tigerbeetle", "err", err)
 		os.Exit(1)
@@ -101,7 +101,7 @@ func NewApp() *App {
 			}
 			metrics.TotalCreateTransferTx.Add(float64(len(transfers)))
 			metrics.TotalTbCreateTransfersCall.Inc()
-			results, err := tigerbeetle_go.CreateTransfers(transfers)
+			results, err := tb.CreateTransfers(transfers)
 			replies := ResultsToReply(results, transfers, err)
 			metrics.TotalCreateTransferTxErr.Add(float64(len(replies)))
 			res := TimedPayloadResponse{
@@ -119,7 +119,7 @@ func NewApp() *App {
 	}
 
 	app := &App{
-		TB:    tigerbeetle_go,
+		TB:    tb,
 		TBuf:  tbuf,
 		TBufs: tbufs,
 	}

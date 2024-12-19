@@ -24,6 +24,7 @@ type config struct {
 	UseGrpc          bool
 	GrpcHealthServer bool
 	GrpcReflection   bool
+	GrpcHighScale    bool
 
 	IsBuffered    bool
 	BufferSize    int
@@ -96,6 +97,7 @@ func NewConfig() (ok bool) {
 		UseGrpc:          useGrpc,
 		GrpcHealthServer: os.Getenv("GRPC_HEALTH_SERVER") == "true",
 		GrpcReflection:   os.Getenv("GRPC_REFLECTION") == "true",
+		GrpcHighScale:    os.Getenv("GRPC_HIGH_SCALE") == "true",
 
 		IsBuffered:    isBuffered,
 		BufferSize:    bufferSize,

@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"net"
 	"os"
+	"time"
 
 	"github.com/lil5/tigerbeetle_api/config"
 	"github.com/lil5/tigerbeetle_api/metrics"
@@ -13,6 +14,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
+	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/reflection"
 
 	grpcprom "github.com/grpc-ecosystem/go-grpc-middleware/providers/prometheus"
@@ -28,7 +30,21 @@ func NewServer() {
 		slog.Error("Failed to listen", "error", err)
 		os.Exit(1)
 	}
-	s := grpc.NewServer()
+
+	var s *grpc.Server
+	if config.Config.GrpcHighScale {
+		s = grpc.NewServer(
+			grpc.KeepaliveParams(keepalive.ServerParameters{
+				MaxConnectionAge: 5 * time.Minute,
+				Time:             60 * time.Second,
+				Timeout:          20 * time.Second,
+			}),
+			grpc.MaxConcurrentStreams(50_000),
+		)
+	} else {
+		s = grpc.NewServer()
+	}
+
 	app := NewApp()
 	defer app.Close()
 	proto.RegisterTigerBeetleServer(s, app)

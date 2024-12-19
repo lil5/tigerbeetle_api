@@ -95,6 +95,7 @@ func NewApp() *App {
 
 			results, err := tigerbeetle_go.CreateTransfers(transfers)
 			replies := ResultsToReply(results, transfers, err)
+			metrics.TotalCreateTransferTxErr.Add(float64(len(replies)))
 			res := TimedPayloadResponse{
 				Replies: replies,
 				Error:   err,
@@ -170,6 +171,7 @@ func (s *App) CreateAccounts(ctx context.Context, in *proto.CreateAccountsReques
 			Result: proto.CreateAccountResult(r.Result),
 		})
 	}
+	metrics.TotalCreateAccountsTxErr.Add(float64(len(resArr)))
 	return &proto.CreateAccountsReply{
 		Results: resArr,
 	}, nil
@@ -179,12 +181,14 @@ func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequ
 	if len(in.Transfers) == 0 {
 		return nil, ErrZeroTransfers
 	}
+	currentIds := make([]string, len(in.Transfers))
 	transfers := []types.Transfer{}
-	for _, inTransfer := range in.Transfers {
+	for i, inTransfer := range in.Transfers {
 		id, err := HexStringToUint128(inTransfer.Id)
 		if err != nil {
 			return nil, err
 		}
+		currentIds[i] = inTransfer.Id
 		flags := types.TransferFlags{}
 		if inTransfer.TransferFlags != nil {
 			flags.Linked = lo.FromPtrOr(inTransfer.TransferFlags.Linked, false)
@@ -228,7 +232,7 @@ func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequ
 	}
 
 	var err error
-	replies := []*proto.CreateTransfersReplyItem{}
+	var replies []*proto.CreateTransfersReplyItem
 	if Config.IsBuffered {
 		buf := s.getRandomTBuf()
 		c := make(chan TimedPayloadResponse)
@@ -245,6 +249,7 @@ func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequ
 		metrics.TotalTbCreateTransfersCall.Inc()
 		results, err = s.TB.CreateTransfers(transfers)
 		replies = ResultsToReply(results, transfers, err)
+		metrics.TotalCreateTransferTxErr.Add(float64(len(replies)))
 	}
 
 	if err != nil {

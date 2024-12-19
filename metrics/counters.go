@@ -26,6 +26,16 @@ var (
 		Help: "Created transfer transactions",
 	})
 
+	TotalCreateTransferTxErr = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "tigerbeetleapi_create_transfers_tx_error_total",
+		Help: "Created transfer error transactions",
+	})
+
+	TotalCreateAccountsTxErr = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "tigerbeetleapi_create_accounts_tx_error_total",
+		Help: "Created account error transactions",
+	})
+
 	TotalTbCreateAccountsCall = promauto.NewCounter(prometheus.CounterOpts{
 		Name: "tigerbeetleapi_tb_create_accounts_total",
 	})

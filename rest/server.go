@@ -12,6 +12,7 @@ import (
 	"github.com/lil5/tigerbeetle_api/config"
 	"github.com/lil5/tigerbeetle_api/grpc"
 	"github.com/lil5/tigerbeetle_api/metrics"
+	"github.com/prometheus/client_golang/prometheus"
 
 	metrics_prometheus "github.com/slok/go-http-metrics/metrics/prometheus"
 	"github.com/slok/go-http-metrics/middleware"
@@ -28,7 +29,9 @@ func NewServer() {
 	defer slog.Info("Server exiting")
 
 	mdlw := middleware.New(middleware.Config{
-		Recorder: metrics_prometheus.NewRecorder(metrics_prometheus.Config{}),
+		Recorder: metrics_prometheus.NewRecorder(metrics_prometheus.Config{
+			Registry: prometheus.DefaultRegisterer,
+		}),
 	})
 	r.Use(ginmiddleware.Handler("", mdlw))
 

@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/lil5/tigerbeetle_api/config"
 	"github.com/lil5/tigerbeetle_api/grpc"
 	"github.com/lil5/tigerbeetle_api/metrics"
 
@@ -18,12 +19,12 @@ import (
 )
 
 func NewServer() {
-	if grpc.Config.Mode != "development" {
+	if config.Config.Mode != "development" {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	r, app := Router()
 	defer app.Close()
-	slog.Info("Rest server listening at", "host", grpc.Config.Host, "port", grpc.Config.Port)
+	slog.Info("Rest server listening at", "host", config.Config.Host, "port", config.Config.Port)
 	defer slog.Info("Server exiting")
 
 	mdlw := middleware.New(middleware.Config{
@@ -31,11 +32,11 @@ func NewServer() {
 	})
 	r.Use(ginmiddleware.Handler("", mdlw))
 
-	prometheusDeferClose := metrics.Register(grpc.Config.PrometheusAddr)
+	prometheusDeferClose := metrics.Register(config.Config.PrometheusAddr)
 	defer prometheusDeferClose()
 
-	addr := fmt.Sprintf("%s:%s", grpc.Config.Host, grpc.Config.Port)
-	if grpc.Config.OnlyIpv4 {
+	addr := fmt.Sprintf("%s:%s", config.Config.Host, config.Config.Port)
+	if config.Config.OnlyIpv4 {
 		server := &http.Server{Handler: r}
 		l, err := net.Listen("tcp4", addr)
 		if err != nil {

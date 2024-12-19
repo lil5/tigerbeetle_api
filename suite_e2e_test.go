@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/lil5/tigerbeetle_api/config"
 	"github.com/lil5/tigerbeetle_api/grpc"
 	"github.com/lil5/tigerbeetle_api/rest"
 	"github.com/stretchr/testify/suite"
@@ -56,7 +57,7 @@ func (s *MyTestSuite) SetupSuite() {
 
 	os.Setenv("TB_ADDRESSES", TB_ADDRESSES)
 	os.Setenv("TB_CLUSTER_ID", TB_CLUSTER_ID)
-	if ok := grpc.NewConfig(); !ok {
+	if ok := config.NewConfig(); !ok {
 		s.FailNow("SetupSuite failed to initialize creating configuration")
 		return
 	}

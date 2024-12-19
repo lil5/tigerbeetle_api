@@ -1,6 +1,7 @@
-package grpc
+package config
 
 import (
+	"fmt"
 	"log/slog"
 	"os"
 	"strconv"
@@ -103,5 +104,8 @@ func NewConfig() (ok bool) {
 
 		PrometheusAddr: prometheusAddr,
 	}
+
+	slog.Info(fmt.Sprintf("%+v", Config))
+	slog.Info("Config loaded", "version", version)
 	return true
 }

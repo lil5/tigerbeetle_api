@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/charithe/timedbuf/v2"
+	"github.com/lil5/tigerbeetle_api/config"
 	"github.com/lil5/tigerbeetle_api/metrics"
 	"github.com/lil5/tigerbeetle_api/proto"
 	"github.com/samber/lo"
@@ -40,8 +41,8 @@ type App struct {
 }
 
 func (a *App) getRandomTBuf() *timedbuf.TimedBuf[TimedPayload] {
-	if Config.BufferCluster > 1 {
-		i := rand.IntN(Config.BufferCluster - 1)
+	if config.Config.BufferCluster > 1 {
+		i := rand.IntN(config.Config.BufferCluster - 1)
 		return a.TBufs[i]
 	} else {
 		return a.TBuf
@@ -58,7 +59,7 @@ func (a *App) Close() {
 const TB_MAX_BATCH_SIZE = 8190
 
 func NewApp() *App {
-	tigerbeetle_go, err := tigerbeetle_go.NewClient(types.Uint128{uint8(Config.TbClusterID)}, Config.TbAddresses)
+	tigerbeetle_go, err := tigerbeetle_go.NewClient(types.Uint128{uint8(config.Config.TbClusterID)}, config.Config.TbAddresses)
 	if err != nil {
 		slog.Error("unable to connect to tigerbeetle", "err", err)
 		os.Exit(1)
@@ -66,11 +67,13 @@ func NewApp() *App {
 
 	var tbuf *timedbuf.TimedBuf[TimedPayload]
 	var tbufs []*timedbuf.TimedBuf[TimedPayload]
-	if Config.IsBuffered {
-		tbufs = make([]*timedbuf.TimedBuf[TimedPayload], Config.BufferCluster)
+	if config.Config.IsBuffered {
+		tbufs = make([]*timedbuf.TimedBuf[TimedPayload], config.Config.BufferCluster)
 
 		// The maximum batch size is set in the TigerBeetle server. The default is 8190.
-		lenMaxBuf := float64(Config.BufferSize)
+		bufSizeFull := float64(config.Config.BufferSize)
+		bufSize80 := bufSizeFull * 0.8
+
 		flushFunc := func(payloads []TimedPayload) {
 			transfers := []types.Transfer{}
 			lenPayloads := float64(len(payloads))
@@ -89,8 +92,13 @@ func NewApp() *App {
 				payloads[isOverflowMaxTransferSizeIndex].buf.Put(payloads[isOverflowMaxTransferSizeIndex:]...)
 			}
 			metrics.TotalBufferCount.Inc()
-			metrics.TotalBufferContents.Add(lenPayloads)
-			metrics.TotalBufferMax.Add(lenMaxBuf)
+			if lenPayloads == bufSizeFull {
+				metrics.TotalBufferContentsFull.Inc()
+			} else if lenPayloads >= bufSize80 {
+				metrics.TotalBufferContentsGt80.Inc()
+			} else {
+				metrics.TotalBufferContentsLt80.Inc()
+			}
 			metrics.TotalCreateTransferTx.Add(float64(len(transfers)))
 			metrics.TotalTbCreateTransfersCall.Inc()
 			results, err := tigerbeetle_go.CreateTransfers(transfers)
@@ -104,8 +112,8 @@ func NewApp() *App {
 				payload.c <- res
 			}
 		}
-		for i := range Config.BufferCluster {
-			tbufs[i] = timedbuf.New(Config.BufferSize, Config.BufferDelay, flushFunc)
+		for i := range config.Config.BufferCluster {
+			tbufs[i] = timedbuf.New(config.Config.BufferSize, config.Config.BufferDelay, flushFunc)
 		}
 		tbuf = tbufs[0]
 	}
@@ -231,7 +239,7 @@ func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequ
 
 	var err error
 	var replies []*proto.CreateTransfersReplyItem
-	if Config.IsBuffered {
+	if config.Config.IsBuffered {
 		buf := s.getRandomTBuf()
 		c := make(chan TimedPayloadResponse)
 		buf.Put(TimedPayload{

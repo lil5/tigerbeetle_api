@@ -11,3 +11,4 @@
 !/bruno/environments/dev.bru
 !.gitkeep
 /tigerbeetle_api
+/config/VERSION.txt

@@ -6,19 +6,22 @@ import (
 )
 
 var (
-	TotalBufferContents = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "tigerbeetleapi_buffer_contents_total",
-		Help: "Tigerbeetle requests buffered filled size sum",
+	TotalBufferContentsFull = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "tigerbeetleapi_buffer_contents_full_total",
+		Help: "Tigerbeetle buffer filled size is full",
 	})
-
-	TotalBufferMax = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "tigerbeetleapi_buffer_max_total",
-		Help: "Tigerbeetle requests buffer max size sum",
+	TotalBufferContentsLt80 = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "tigerbeetleapi_buffer_contents_lt80_total",
+		Help: "Tigerbeetle buffer filled size is less than 80%",
+	})
+	TotalBufferContentsGt80 = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "tigerbeetleapi_buffer_contents_gte80_total",
+		Help: "Tigerbeetle buffer filled size is greater than or equal to 80%",
 	})
 
 	TotalBufferCount = promauto.NewCounter(prometheus.CounterOpts{
 		Name: "tigerbeetleapi_buffer_count_total",
-		Help: "Tigerbeetle requests total buffers",
+		Help: "Tigerbeetle requests total buffer instances created",
 	})
 
 	TotalCreateTransferTx = promauto.NewCounter(prometheus.CounterOpts{

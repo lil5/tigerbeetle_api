@@ -48,3 +48,5 @@ environments/
 *.swp
 *.swo
 .DS_Store
+
+config/VERSION.txt

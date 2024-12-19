@@ -6,6 +6,7 @@ import (
 	"net"
 	"os"
 
+	"github.com/lil5/tigerbeetle_api/config"
 	"github.com/lil5/tigerbeetle_api/metrics"
 	"github.com/lil5/tigerbeetle_api/proto"
 	"github.com/prometheus/client_golang/prometheus"
@@ -19,10 +20,10 @@ import (
 
 func NewServer() {
 	networkType := "tcp"
-	if Config.OnlyIpv4 {
+	if config.Config.OnlyIpv4 {
 		networkType = "ipv4"
 	}
-	lis, err := net.Listen(networkType, fmt.Sprintf("%s:%s", Config.Host, Config.Port))
+	lis, err := net.Listen(networkType, fmt.Sprintf("%s:%s", config.Config.Host, config.Config.Port))
 	if err != nil {
 		slog.Error("Failed to listen", "error", err)
 		os.Exit(1)
@@ -32,17 +33,17 @@ func NewServer() {
 	defer app.Close()
 	proto.RegisterTigerBeetleServer(s, app)
 
-	if Config.GrpcHealthServer {
+	if config.Config.GrpcHealthServer {
 		healthServer := health.NewServer()
 		healthpb.RegisterHealthServer(s, healthServer)
 		healthServer.SetServingStatus("tigerbeetle.TigerBeetle", healthpb.HealthCheckResponse_SERVING)
 	}
 
-	if Config.GrpcReflection {
+	if config.Config.GrpcReflection {
 		reflection.Register(s)
 	}
 
-	prometheusDeferClose := metrics.Register(Config.PrometheusAddr)
+	prometheusDeferClose := metrics.Register(config.Config.PrometheusAddr)
 	defer prometheusDeferClose()
 	srvMetrics := grpcprom.NewServerMetrics(grpcprom.WithServerHandlingTimeHistogram(
 		grpcprom.WithHistogramBuckets([]float64{0.001, 0.01, 0.1, 0.3, 0.6, 1, 3, 6, 9, 20, 30, 60, 90, 120}),

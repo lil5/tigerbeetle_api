@@ -92,7 +92,7 @@ func NewApp() *App {
 			metrics.TotalBufferContents.Add(lenPayloads)
 			metrics.TotalBufferMax.Add(lenMaxBuf)
 			metrics.TotalCreateTransferTx.Add(float64(len(transfers)))
-
+			metrics.TotalTbCreateTransfersCall.Inc()
 			results, err := tigerbeetle_go.CreateTransfers(transfers)
 			replies := ResultsToReply(results, transfers, err)
 			metrics.TotalCreateTransferTxErr.Add(float64(len(replies)))

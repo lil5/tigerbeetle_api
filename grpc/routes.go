@@ -101,8 +101,11 @@ func NewApp() *App {
 			}
 			metrics.TotalCreateTransferTx.Add(float64(len(transfers)))
 			metrics.TotalTbCreateTransfersCall.Inc()
-			results, err := tb.CreateTransfers(transfers)
-			replies := ResultsToReply(results, transfers, err)
+			var replies []*proto.CreateTransfersReplyItem
+			if !config.Config.IsDryRun {
+				results, err := tb.CreateTransfers(transfers)
+				replies = ResultsToReply(results, transfers, err)
+			}
 			metrics.TotalCreateTransferTxErr.Add(float64(len(replies)))
 			res := TimedPayloadResponse{
 				Replies: replies,
@@ -167,9 +170,6 @@ func (s *App) CreateAccounts(ctx context.Context, in *proto.CreateAccountsReques
 	}
 
 	metrics.TotalTbCreateAccountsCall.Inc()
-	if config.Config.IsDryRun {
-		return &proto.CreateAccountsReply{}, nil
-	}
 	results, err := s.TB.CreateAccounts(accounts)
 	if err != nil {
 		return nil, err
@@ -254,14 +254,14 @@ func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequ
 		replies = res.Replies
 		err = res.Error
 	} else {
-		var results []types.TransferEventResult
 		metrics.TotalTbCreateTransfersCall.Inc()
 		metrics.TotalCreateTransferTx.Add(float64(len(transfers)))
-		if config.Config.IsDryRun {
-			return &proto.CreateTransfersReply{}, nil
+		var replies []*proto.CreateTransfersReplyItem
+		if !config.Config.IsDryRun {
+			var results []types.TransferEventResult
+			results, err = s.TB.CreateTransfers(transfers)
+			replies = ResultsToReply(results, transfers, err)
 		}
-		results, err = s.TB.CreateTransfers(transfers)
-		replies = ResultsToReply(results, transfers, err)
 		metrics.TotalCreateTransferTxErr.Add(float64(len(replies)))
 	}
 

@@ -235,7 +235,7 @@ func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequ
 			UserData32:      uint32(inTransfer.UserData32),
 			Timeout:         0,
 			Ledger:          uint32(inTransfer.Ledger),
-			Code:            uint16(inTransfer.Ledger),
+			Code:            uint16(inTransfer.Code),
 			Flags:           flags.ToUint16(),
 			Timestamp:       0,
 		})

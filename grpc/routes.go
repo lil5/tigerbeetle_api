@@ -98,6 +98,7 @@ func NewApp() *App {
 				metrics.TotalBufferContentsGte80.Inc()
 			} else {
 				metrics.TotalBufferContentsLt80.Inc()
+				// slog.Info("Buffer contents less than 80%", "contents %", int((lenPayloads/bufSizeFull)*100))
 			}
 			metrics.TotalCreateTransferTx.Add(float64(len(transfers)))
 			metrics.TotalTbCreateTransfersCall.Inc()

@@ -75,22 +75,19 @@ func NewApp() *App {
 		bufSize80 := bufSizeFull * 0.8
 
 		flushFunc := func(payloads []TimedPayload) {
-			transfers := []types.Transfer{}
 			lenPayloads := float64(len(payloads))
 			totalTransferSize := 0
-			isOverflowMaxTransferSizeIndex := -1
-			for i, payload := range payloads {
+			indexBatch := 0
+			transferBatches := [][]types.Transfer{[]types.Transfer{}}
+			for _, payload := range payloads {
 				totalTransferSize += len(payload.Transfers)
 				if totalTransferSize > TB_MAX_BATCH_SIZE {
-					isOverflowMaxTransferSizeIndex = i
-					break
+					indexBatch++
+					transferBatches = append(transferBatches, []types.Transfer{})
 				}
-				transfers = append(transfers, payload.Transfers...)
+				transferBatches[indexBatch] = append(transferBatches[indexBatch], payload.Transfers...)
 			}
-			if isOverflowMaxTransferSizeIndex != -1 {
-				// If the total transfer size exceeds the maximum batch size, the overflow with be sent back to the buffer
-				payloads[isOverflowMaxTransferSizeIndex].buf.Put(payloads[isOverflowMaxTransferSizeIndex:]...)
-			}
+
 			metrics.TotalBufferCount.Inc()
 			if lenPayloads == bufSizeFull {
 				metrics.TotalBufferContentsFull.Inc()
@@ -100,14 +97,17 @@ func NewApp() *App {
 				metrics.TotalBufferContentsLt80.Inc()
 				// slog.Info("Buffer contents less than 80%", "contents %", int((lenPayloads/bufSizeFull)*100))
 			}
-			metrics.TotalCreateTransferTx.Add(float64(len(transfers)))
-			metrics.TotalTbCreateTransfersCall.Inc()
+
 			var replies []*proto.CreateTransfersReplyItem
-			if !config.Config.IsDryRun {
-				results, err := tb.CreateTransfers(transfers)
-				replies = ResultsToReply(results, transfers, err)
+			for _, transfers := range transferBatches {
+				metrics.TotalCreateTransferTx.Add(float64(len(transfers)))
+				metrics.TotalTbCreateTransfersCall.Inc()
+				if !config.Config.IsDryRun {
+					results, err := tb.CreateTransfers(transfers)
+					replies = ResultsToReply(results, transfers, err)
+				}
+				metrics.TotalCreateTransferTxErr.Add(float64(len(replies)))
 			}
-			metrics.TotalCreateTransferTxErr.Add(float64(len(replies)))
 			res := TimedPayloadResponse{
 				Replies: replies,
 				Error:   err,

@@ -61,3 +61,8 @@ ghz-benchmark-id:
 	ghz --insecure --call proto.TigerBeetle.GetID -d {} -n 500000 --concurrency 20000 --connections=32 localhost:50051
 ghz-benchmark-transfers:
 	ghz --insecure --call proto.TigerBeetle.CreateTransfers --data-file transfers.json -n 500000 --concurrency 20000 --connections=64 localhost:50051
+
+pprof-build:
+	go build --tags pprof .
+pprof-open:
+	go tool pprof -http=:8081 http://localhost:6060/debug/pprof/profile\?seconds\=5

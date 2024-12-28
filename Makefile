@@ -9,9 +9,12 @@ build:
 	printf %s $$(git rev-parse HEAD) > config/VERSION.txt
 	go build .
 
+exec:
+	./tigerbeetle_api
+
 buildexec:
 	make build
-	./tigerbeetle_api
+	make exec
 
 release: release-darwin-arm64 release-darwin-arm64 release-linux-amd64 release-linux-arm64
 release-linux-amd64:

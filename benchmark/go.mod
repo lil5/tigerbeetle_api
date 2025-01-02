@@ -5,7 +5,7 @@ go 1.23.4
 require (
 	github.com/bojand/ghz v0.120.0
 	github.com/stretchr/testify v1.10.0
-	github.com/tigerbeetle/tigerbeetle-go v0.16.16
+	github.com/tigerbeetle/tigerbeetle-go v0.16.20
 	google.golang.org/grpc v1.68.1
 	google.golang.org/protobuf v1.34.2
 )

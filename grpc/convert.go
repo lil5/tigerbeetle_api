@@ -74,7 +74,7 @@ func AccountFilterFromProtoToTigerbeetle(pAccountFilter *proto.AccountFilter) (*
 		tbFlags = types.AccountFilterFlags{
 			Debits:   lo.FromPtrOr(pAccountFilter.Flags.Debits, false),
 			Credits:  lo.FromPtrOr(pAccountFilter.Flags.Credits, false),
-			Reversed: lo.FromPtrOr(pAccountFilter.Flags.Reserved, false),
+			Reversed: lo.FromPtrOr(pAccountFilter.Flags.Reversed, false),
 		}
 	}
 

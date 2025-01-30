@@ -129,7 +129,7 @@ message AccountFilter {
 message AccountFilterFlags {
   optional bool debits = 1;                     
   optional bool credits = 2; 
-  optional bool reserved = 3; 
+  optional bool reversed = 3; 
 }
 
 message AccountBalance {

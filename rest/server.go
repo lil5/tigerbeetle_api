@@ -53,7 +53,12 @@ func NewServer() {
 
 func Router() (*gin.Engine, *grpc.App) {
 	s := grpc.NewApp()
-	r := gin.Default()
+	var r *gin.Engine
+	if config.Config.Mode == "development" {
+		r = gin.Default()
+	} else {
+		r = gin.New()
+	}
 	r.GET("/id", grpcHandle(s.GetID))
 	r.GET("/ping", ping)
 	r.POST("/accounts/create", grpcHandle(s.CreateAccounts))

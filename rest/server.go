@@ -73,13 +73,17 @@ func grpcHandle[In any, Out any](f func(ctx context.Context, in *In) (out *Out, 
 	return func(c *gin.Context) {
 		var in In
 		if err := c.ShouldBindBodyWithJSON(&in); err != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
+			errStr := err.Error()
+			slog.Warn(errStr)
+			c.String(http.StatusBadRequest, errStr)
 			return
 		}
 		out, err := f(c.Request.Context(), &in)
 		if err != nil {
-			fmt.Fprint(c.Writer, err.Error())
-			c.AbortWithError(http.StatusInternalServerError, err)
+			errStr := err.Error()
+			slog.Error(errStr)
+			c.String(http.StatusInternalServerError, errStr)
+			return
 		}
 
 		c.JSON(http.StatusOK, out)

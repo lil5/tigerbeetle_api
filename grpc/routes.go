@@ -257,13 +257,12 @@ func (s *App) CreateTransfers(ctx context.Context, in *proto.CreateTransfersRequ
 	} else {
 		metrics.TotalTbCreateTransfersCall.Inc()
 		metrics.TotalCreateTransferTx.Add(float64(len(transfers)))
-		var replies []*proto.CreateTransfersReplyItem
 		if !config.Config.IsDryRun {
 			var results []types.TransferEventResult
 			results, err = s.TB.CreateTransfers(transfers)
 			replies = ResultsToReply(results, transfers, err)
+			metrics.TotalCreateTransferTxErr.Add(float64(len(results)))
 		}
-		metrics.TotalCreateTransferTxErr.Add(float64(len(replies)))
 	}
 
 	if err != nil {

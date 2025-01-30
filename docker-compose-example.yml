@@ -2,7 +2,7 @@ name: tigerbeetle_api_example
 
 services:
   tigerbeetle_api:
-    image: ghcr.io/lil5/tigerbeetle_api:c6c39c923958bd64c242f939a851c26fcd2168b6 
+    image: ghcr.io/lil5/tigerbeetle_api:1afb315502b924f31ba33c705713499261c2c384 
     ports:
       - 127.0.0.1:50051:50051
     environment:

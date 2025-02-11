@@ -17,29 +17,37 @@ And get started by opening the `/bruno` directory in Bruno.
 
 **1. Install [golang](https://go.dev/)**
 
-**2. Install zig for cross-compilation**
-
-```
-$ brew install zig
-```
-
-Setup and run tigerbeetle in docker (optional)
+Setup and run tigerbeetle in docker
 
 ```
 $ make docker-setup docker-start
 ```
 
-**3. Copy example config file**
+**2. Copy example config file**
 
 ```
 $ cp .example.env .env
 ```
+
+By default it is set to use a grpc server uncomment `USE_GRPC=false` and set to false for rest api.
 
 **4. Run server with the following command**
 
 ```
 $ make start
 ```
+
+## Cross Compilation
+
+**Install zig for cross-compilation**
+
+```
+$ brew install zig
+```
+
+**Build tigerbeetle_api cross-compiled**
+
+Read the `Makefile` and run one.
 
 ## License
 

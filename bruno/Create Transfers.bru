@@ -31,7 +31,12 @@ body:json {
 }
 
 vars:pre-request {
-  user_id_src: 18e51b35af7a506169d936d422eb94d
-  user_id_dest: 18e51dd94b69f6507d7f56d7568b08d
-  id: 18e51d37b2452e32feaca180b5ff123
+  user_id_src: 10
+  user_id_dest: 20
+}
+
+script:pre-request {
+  const moment = require("moment")
+  const unix = moment().unix();
+  bru.setEnvVar("id", unix);
 }

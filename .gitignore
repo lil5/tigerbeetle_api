@@ -3,6 +3,7 @@
 .task
 .*.env
 .env
+*.bak
 /bruno/environments/*.bru
 /build
 

@@ -1,4 +1,4 @@
-FROM golang:1.23.4-alpine AS builder
+FROM golang:alpine AS builder
 
 # Install git and build dependencies required by TigerBeetle
 RUN apk update && apk add --no-cache git build-base zig

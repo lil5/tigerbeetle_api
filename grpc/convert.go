@@ -18,17 +18,17 @@ func AccountToProtoAccount(tbAccount types.Account) *proto.Account {
 	}
 	return &proto.Account{
 		Id:             tbAccount.ID.String(),
-		DebitsPending:  lo.ToPtr(tbAccount.DebitsPending.BigInt()).Int64(),
-		DebitsPosted:   lo.ToPtr(tbAccount.DebitsPosted.BigInt()).Int64(),
-		CreditsPending: lo.ToPtr(tbAccount.CreditsPending.BigInt()).Int64(),
-		CreditsPosted:  lo.ToPtr(tbAccount.CreditsPosted.BigInt()).Int64(),
+		DebitsPending:  lo.ToPtr(tbAccount.DebitsPending.BigInt()).Uint64(),
+		DebitsPosted:   lo.ToPtr(tbAccount.DebitsPosted.BigInt()).Uint64(),
+		CreditsPending: lo.ToPtr(tbAccount.CreditsPending.BigInt()).Uint64(),
+		CreditsPosted:  lo.ToPtr(tbAccount.CreditsPosted.BigInt()).Uint64(),
 		UserData128:    tbAccount.UserData128.String(),
 		UserData64:     int64(tbAccount.UserData64),
 		UserData32:     int32(tbAccount.UserData32),
-		Ledger:         int64(tbAccount.Ledger),
-		Code:           int32(tbAccount.Code),
+		Ledger:         int32(tbAccount.Ledger),
+		Code:           uint32(tbAccount.Code),
 		Flags:          &pFlags,
-		Timestamp:      int64(tbAccount.Timestamp),
+		Timestamp:      uint64(tbAccount.Timestamp),
 	}
 }
 
@@ -54,12 +54,12 @@ func TransferToProtoTransfer(tbTransfer types.Transfer) *proto.Transfer {
 		Amount:          lo.ToPtr(tbTransfer.Amount.BigInt()).Int64(),
 		PendingId:       lo.If[*string](pendingId == "", nil).Else(&pendingId),
 		UserData128:     tbTransfer.UserData128.String(),
-		UserData64:      int64(tbTransfer.UserData64),
-		UserData32:      int32(tbTransfer.UserData32),
-		Ledger:          int64(tbTransfer.Ledger),
-		Code:            int32(tbTransfer.Code),
+		UserData64:      tbTransfer.UserData64,
+		UserData32:      tbTransfer.UserData32,
+		Ledger:          tbTransfer.Ledger,
+		Code:            uint32(tbTransfer.Code),
 		TransferFlags:   pFlags,
-		Timestamp:       lo.ToPtr(int64(tbTransfer.Timestamp)),
+		Timestamp:       &tbTransfer.Timestamp,
 	}
 }
 
@@ -89,11 +89,11 @@ func AccountFilterFromProtoToTigerbeetle(pAccountFilter *proto.AccountFilter) (*
 
 func AccountBalanceFromTigerbeetleToProto(tbBalance types.AccountBalance) *proto.AccountBalance {
 	return &proto.AccountBalance{
-		DebitsPending:  lo.ToPtr(tbBalance.DebitsPending.BigInt()).Int64(),
-		DebitsPosted:   lo.ToPtr(tbBalance.DebitsPosted.BigInt()).Int64(),
-		CreditsPending: lo.ToPtr(tbBalance.CreditsPending.BigInt()).Int64(),
-		CreditsPosted:  lo.ToPtr(tbBalance.CreditsPosted.BigInt()).Int64(),
-		Timestamp:      int64(tbBalance.Timestamp),
+		DebitsPending:  lo.ToPtr(tbBalance.DebitsPending.BigInt()).Uint64(),
+		DebitsPosted:   lo.ToPtr(tbBalance.DebitsPosted.BigInt()).Uint64(),
+		CreditsPending: lo.ToPtr(tbBalance.CreditsPending.BigInt()).Uint64(),
+		CreditsPosted:  lo.ToPtr(tbBalance.CreditsPosted.BigInt()).Uint64(),
+		Timestamp:      tbBalance.Timestamp,
 	}
 }
 

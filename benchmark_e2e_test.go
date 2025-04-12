@@ -58,7 +58,7 @@ func BenchmarkMockHttpTest(b *testing.B) {
 				"debits_must_not_exceed_credits": false,
 				"history":                        true,
 			},
-			"timestamp": time.Now().UTC().Format(time.RFC3339Nano),
+			"timestamp": time.Now().UTC().UnixNano(),
 		}, {
 			"user_data_128":   nil,
 			"user_data_64":    nil,
@@ -76,7 +76,7 @@ func BenchmarkMockHttpTest(b *testing.B) {
 				"debits_must_not_exceed_credits": false,
 				"history":                        true,
 			},
-			"timestamp": time.Now().UTC().Format(time.RFC3339Nano),
+			"timestamp": time.Now().UTC().UnixNano(),
 		}}})
 
 	b.ResetTimer()
@@ -103,7 +103,7 @@ func BenchmarkMockHttpTest(b *testing.B) {
 							"balancing_debit":       false,
 							"balancing_credit":      false,
 						},
-						"timestamp": time.Now().UTC().Format(time.RFC3339Nano),
+						"timestamp": time.Now().UTC().UnixNano(),
 					},
 				},
 			})

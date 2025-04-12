@@ -19,7 +19,7 @@ body:json {
         "credit_account_id": "{{user_id_dest}}",
         "pending_id": null,
         "user_data_128": "18e55a6492e43873a3fe30bc0ae9087",
-        "user_data_64": "2024-03-19T08:42:30.389737637+01:00",
+        "user_data_64": {{userdata64}},
         "user_data_32": 3,
         "amount": 1000,
         "ledger": 1,
@@ -38,5 +38,7 @@ vars:pre-request {
 script:pre-request {
   const moment = require("moment")
   const unix = moment().unix();
+  const unixnano = moment().valueOf() * 1000000
   bru.setEnvVar("id", unix);
+  bru.setEnvVar("userdata64", unixnano);
 }

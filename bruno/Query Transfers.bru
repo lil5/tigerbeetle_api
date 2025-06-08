@@ -1,0 +1,132 @@
+meta {
+  name: Query Transfers
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{url}}/transfers/query
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "filter": {
+      "user_data128": "1000",
+      "user_data64": "100",
+      "user_data32": "10",
+      "code": "5",
+      "ledger": "1",
+      "timestamp_min": "0",
+      "timestamp_max": "0",
+      "limit": 10,
+      "flags": {
+        "reversed": false
+      }
+    }
+  }
+}
+
+docs {
+  ## Query Transfers
+  
+  Query transfers based on flexible filter criteria including UserData fields, code, ledger, and timestamp ranges.
+  
+  ### Filter Fields:
+  
+  - **user_data128** (optional): Hex string representation of a 128-bit value
+  - **user_data64** (optional): 64-bit unsigned integer
+  - **user_data32** (optional): 32-bit unsigned integer  
+  - **code** (optional): Transfer code
+  - **ledger** (optional): Ledger number
+  - **timestamp_min** (optional): Minimum timestamp (nanoseconds)
+  - **timestamp_max** (optional): Maximum timestamp (nanoseconds)
+  - **limit** (required): Maximum number of transfers to return
+  - **flags** (optional):
+    - **reversed**: If true, returns transfers in reverse chronological order
+  
+  ### Examples:
+  
+  #### Query by UserData128
+  ```json
+  {
+    "filter": {
+      "user_data128": "1000",
+      "limit": 10
+    }
+  }
+  ```
+  
+  #### Query by multiple criteria
+  ```json
+  {
+    "filter": {
+      "user_data64": "100",
+      "code": "5",
+      "ledger": "1",
+      "limit": 20
+    }
+  }
+  ```
+  
+  #### Query with timestamp range
+  ```json
+  {
+    "filter": {
+      "user_data64": "100",
+      "timestamp_min": "1700000000000000000",
+      "timestamp_max": "1700001000000000000",
+      "limit": 50
+    }
+  }
+  ```
+  
+  #### Query in reverse order
+  ```json
+  {
+    "filter": {
+      "user_data64": "100",
+      "limit": 10,
+      "flags": {
+        "reversed": true
+      }
+    }
+  }
+  ```
+  
+  ### Response:
+  
+  Returns an array of Transfer objects matching the filter criteria:
+  
+  ```json
+  {
+    "transfers": [
+      {
+        "id": "1001",
+        "debit_account_id": "100",
+        "credit_account_id": "200",
+        "amount": 1000,
+        "user_data128": "1000",
+        "user_data64": "100",
+        "user_data32": "10",
+        "ledger": "1",
+        "code": "5",
+        "transfer_flags": {
+          "linked": false,
+          "pending": false,
+          "post_pending_transfer": false,
+          "void_pending_transfer": false,
+          "balancing_debit": false,
+          "balancing_credit": false
+        },
+        "timestamp": "1700000000000000000"
+      }
+    ]
+  }
+  ```
+  
+  ### Note:
+  
+  This is a preview API and is subject to breaking changes in future versions.
+}

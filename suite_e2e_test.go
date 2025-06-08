@@ -232,6 +232,84 @@ func (s *MyTestSuite) TestCalls() {
 		s.Equal(0.0, json.Get("accounts.1.debits_posted").Num)
 		s.Equal(10.0, json.Get("accounts.1.credits_posted").Num)
 	})
+
+	s.Run("QueryTransfers", func() {
+		slog.Info("Testing QueryTransfers with UserData filters")
+		// Test query with empty results
+		_, resultFunc := MockGinContext(s.router, http.MethodPost, "/transfers/query", &gin.H{
+			"filter": gin.H{
+				"user_data64": 9999,
+				"limit":       10,
+			},
+		})
+		result := resultFunc()
+		s.Equal(http.StatusOK, result.Response.StatusCode)
+		json := gjson.Parse(result.Body)
+		s.Empty(json.Get("transfers").Array())
+
+		// Test query with results (get all transfers)
+		_, resultFunc = MockGinContext(s.router, http.MethodPost, "/transfers/query", &gin.H{
+			"filter": gin.H{
+				"limit": 10,
+			},
+		})
+		result = resultFunc()
+		s.Equal(http.StatusOK, result.Response.StatusCode)
+		json = gjson.Parse(result.Body)
+		transfers := json.Get("transfers").Array()
+		s.GreaterOrEqual(len(transfers), 2, "Should find at least 2 transfers")
+
+		// Test query with limit
+		_, resultFunc = MockGinContext(s.router, http.MethodPost, "/transfers/query", &gin.H{
+			"filter": gin.H{
+				"limit": 1,
+			},
+		})
+		result = resultFunc()
+		s.Equal(http.StatusOK, result.Response.StatusCode)
+		json = gjson.Parse(result.Body)
+		transfers = json.Get("transfers").Array()
+		s.Equal(1, len(transfers), "Should respect limit parameter")
+	})
+
+	s.Run("QueryAccounts", func() {
+		slog.Info("Testing QueryAccounts with UserData filters")
+		// Test query with empty results
+		_, resultFunc := MockGinContext(s.router, http.MethodPost, "/accounts/query", &gin.H{
+			"filter": gin.H{
+				"user_data64": 9999,
+				"limit":       10,
+			},
+		})
+		result := resultFunc()
+		s.Equal(http.StatusOK, result.Response.StatusCode)
+		json := gjson.Parse(result.Body)
+		s.Empty(json.Get("accounts").Array())
+
+		// Test query with results (get all accounts)
+		_, resultFunc = MockGinContext(s.router, http.MethodPost, "/accounts/query", &gin.H{
+			"filter": gin.H{
+				"limit": 10,
+			},
+		})
+		result = resultFunc()
+		s.Equal(http.StatusOK, result.Response.StatusCode)
+		json = gjson.Parse(result.Body)
+		accounts := json.Get("accounts").Array()
+		s.GreaterOrEqual(len(accounts), 2, "Should find at least 2 accounts")
+
+		// Test query with limit
+		_, resultFunc = MockGinContext(s.router, http.MethodPost, "/accounts/query", &gin.H{
+			"filter": gin.H{
+				"limit": 1,
+			},
+		})
+		result = resultFunc()
+		s.Equal(http.StatusOK, result.Response.StatusCode)
+		json = gjson.Parse(result.Body)
+		accounts = json.Get("accounts").Array()
+		s.Equal(1, len(accounts), "Should respect limit parameter")
+	})
 }
 
 // utility functions

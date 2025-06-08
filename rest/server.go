@@ -67,6 +67,8 @@ func Router() (*gin.Engine, *grpc.App) {
 	r.POST("/transfers/lookup", grpcHandle(s.LookupTransfers))
 	r.POST("/account/transfers", grpcHandle(s.GetAccountTransfers))
 	r.POST("/account/balances", grpcHandle(s.GetAccountBalances))
+	r.POST("/transfers/query", grpcHandle(s.QueryTransfers))
+	r.POST("/accounts/query", grpcHandle(s.QueryAccounts))
 	return r, s
 }
 

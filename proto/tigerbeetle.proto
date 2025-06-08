@@ -15,6 +15,8 @@ service TigerBeetle {
   rpc LookupTransfers(LookupTransfersRequest) returns (LookupTransfersReply) {}
   rpc GetAccountTransfers(GetAccountTransfersRequest) returns (GetAccountTransfersReply) {}
   rpc GetAccountBalances(GetAccountBalancesRequest) returns (GetAccountBalancesReply) {}
+  rpc QueryTransfers(QueryTransfersRequest) returns (QueryTransfersReply) {}
+  rpc QueryAccounts(QueryAccountsRequest) returns (QueryAccountsReply) {}
 }
 
 message GetIDRequest {
@@ -67,6 +69,18 @@ message GetAccountBalancesRequest {
 }
 message GetAccountBalancesReply {
   repeated AccountBalance account_balances = 1;
+}
+message QueryTransfersRequest {
+  QueryFilter filter = 1;
+}
+message QueryTransfersReply {
+  repeated Transfer transfers = 1;
+}
+message QueryAccountsRequest {
+  QueryFilter filter = 1;
+}
+message QueryAccountsReply {
+  repeated Account accounts = 1;
 }
 
 
@@ -138,6 +152,22 @@ message AccountBalance {
   uint64 credits_pending = 3;
   uint64 credits_posted = 4;
   uint64 timestamp = 5;
+}
+
+message QueryFilter {
+  optional string user_data128 = 1;
+  optional uint64 user_data64 = 2;
+  optional uint32 user_data32 = 3;
+  optional uint32 code = 4;
+  optional uint32 ledger = 5;
+  optional uint64 timestamp_min = 6;
+  optional uint64 timestamp_max = 7;
+  uint32 limit = 8;
+  optional QueryFilterFlags flags = 9;
+}
+
+message QueryFilterFlags {
+  optional bool reversed = 1;
 }
 
 // Result enums

@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"math/rand/v2"
 	"os"
+	"strings"
 
 	"github.com/charithe/timedbuf/v2"
 	"github.com/lil5/tigerbeetle_api/config"
@@ -362,4 +363,54 @@ func (s *App) GetAccountBalances(ctx context.Context, in *proto.GetAccountBalanc
 		return AccountBalanceFromTigerbeetleToProto(v)
 	})
 	return &proto.GetAccountBalancesReply{AccountBalances: pBalances}, nil
+}
+
+func (s *App) QueryTransfers(ctx context.Context, in *proto.QueryTransfersRequest) (*proto.QueryTransfersReply, error) {
+	if in.Filter == nil {
+		return nil, errors.New("filter is required")
+	}
+
+	tbFilter, err := QueryFilterFromProtoToTigerbeetle(in.Filter)
+	if err != nil {
+		if in.Filter.UserData128 != nil && strings.Contains(err.Error(), "hex") {
+			return nil, errors.New("invalid UserData128: " + err.Error())
+		}
+		return nil, err
+	}
+
+	metrics.TotalTbQueryTransfersCall.Inc()
+	res, err := s.TB.QueryTransfers(*tbFilter)
+	if err != nil {
+		return nil, err
+	}
+
+	pTransfers := lo.Map(res, func(v types.Transfer, _ int) *proto.Transfer {
+		return TransferToProtoTransfer(v)
+	})
+	return &proto.QueryTransfersReply{Transfers: pTransfers}, nil
+}
+
+func (s *App) QueryAccounts(ctx context.Context, in *proto.QueryAccountsRequest) (*proto.QueryAccountsReply, error) {
+	if in.Filter == nil {
+		return nil, errors.New("filter is required")
+	}
+
+	tbFilter, err := QueryFilterFromProtoToTigerbeetle(in.Filter)
+	if err != nil {
+		if in.Filter.UserData128 != nil && strings.Contains(err.Error(), "hex") {
+			return nil, errors.New("invalid UserData128: " + err.Error())
+		}
+		return nil, err
+	}
+
+	metrics.TotalTbQueryAccountsCall.Inc()
+	res, err := s.TB.QueryAccounts(*tbFilter)
+	if err != nil {
+		return nil, err
+	}
+
+	pAccounts := lo.Map(res, func(v types.Account, _ int) *proto.Account {
+		return AccountToProtoAccount(v)
+	})
+	return &proto.QueryAccountsReply{Accounts: pAccounts}, nil
 }

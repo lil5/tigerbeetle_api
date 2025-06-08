@@ -1,0 +1,7 @@
+{
+  "details": {
+    "operationId": "query-transfers",
+    "operationName": "QueryTransfers",
+    "serviceName": "proto.TigerBeetle"
+  }
+}

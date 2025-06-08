@@ -68,4 +68,14 @@ var (
 		Name: "tigerbeetleapi_tb_get_account_balances_total",
 		Help: "Called when tigerbeetle client get_account_balances is run",
 	})
+
+	TotalTbQueryTransfersCall = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "tigerbeetleapi_tb_query_transfers_total",
+		Help: "Called when tigerbeetle client query_transfers is run",
+	})
+
+	TotalTbQueryAccountsCall = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "tigerbeetleapi_tb_query_accounts_total",
+		Help: "Called when tigerbeetle client query_accounts is run",
+	})
 )

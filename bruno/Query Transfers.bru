@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{url}}/transfers/query
+  url: {{base}}/transfers/query
   body: json
   auth: none
 }
@@ -13,13 +13,13 @@ post {
 body:json {
   {
     "filter": {
-      "user_data128": "1000",
-      "user_data64": "100",
-      "user_data32": "10",
-      "code": "5",
-      "ledger": "1",
-      "timestamp_min": "0",
-      "timestamp_max": "0",
+  //     "user_data128": "1000",
+  //     "user_data64": 100,
+  //     "user_data32": 10,
+      "code": 1,
+      "ledger": 1,
+  //     "timestamp_min": 0,
+  //     "timestamp_max": 1750367289473,
       "limit": 10,
       "flags": {
         "reversed": false

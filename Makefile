@@ -4,6 +4,9 @@ default:
 start:
 	go run .
 
+lint:
+	gofmt -l .
+
 .PHONY: build
 build:
 	printf %s $$(git rev-parse HEAD) > config/VERSION.txt

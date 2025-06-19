@@ -98,7 +98,7 @@ func TestQueryTransfers(t *testing.T) {
 		req := &proto.QueryTransfersRequest{
 			Filter: nil,
 		}
-		
+
 		_, err := app.QueryTransfers(context.Background(), req)
 		assert.Error(t, err)
 		assert.Equal(t, "filter is required", err.Error())

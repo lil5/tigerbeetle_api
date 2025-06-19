@@ -20,7 +20,7 @@ func TestQueryAccounts(t *testing.T) {
 		req := &proto.QueryAccountsRequest{
 			Filter: nil,
 		}
-		
+
 		_, err := app.QueryAccounts(context.Background(), req)
 		assert.Error(t, err)
 		assert.Equal(t, "filter is required", err.Error())
@@ -66,15 +66,15 @@ func TestQueryAccounts(t *testing.T) {
 		// Mock account data
 		mockAccounts := []types.Account{
 			{
-				ID:              types.ToUint128(1),
-				DebitsPosted:    types.ToUint128(1000),
-				CreditsPosted:   types.ToUint128(500),
-				UserData128:     types.ToUint128(1),
-				UserData64:      100,
-				UserData32:      10,
-				Ledger:          0,
-				Code:            1,
-				Timestamp:       1000000,
+				ID:            types.ToUint128(1),
+				DebitsPosted:  types.ToUint128(1000),
+				CreditsPosted: types.ToUint128(500),
+				UserData128:   types.ToUint128(1),
+				UserData64:    100,
+				UserData32:    10,
+				Ledger:        0,
+				Code:          1,
+				Timestamp:     1000000,
 			},
 		}
 

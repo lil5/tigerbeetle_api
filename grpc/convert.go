@@ -122,3 +122,38 @@ func ResultsToReply(results []types.TransferEventResult, transfers []types.Trans
 	}
 	return replies
 }
+
+func QueryFilterFromProtoToTigerbeetle(pFilter *proto.QueryFilter) (*types.QueryFilter, error) {
+	if pFilter == nil {
+		return nil, nil
+	}
+
+	var userData128 types.Uint128
+	if pFilter.UserData128 != nil && *pFilter.UserData128 != "" {
+		var err error
+		userData128, err = types.HexStringToUint128(*pFilter.UserData128)
+		if err != nil {
+			slog.Error("invalid UserData128 hex string", "hex", *pFilter.UserData128, "error", err)
+			return nil, err
+		}
+	}
+
+	var flags types.QueryFilterFlags
+	if pFilter.Flags != nil {
+		flags = types.QueryFilterFlags{
+			Reversed: lo.FromPtrOr(pFilter.Flags.Reversed, false),
+		}
+	}
+
+	return &types.QueryFilter{
+		UserData128:  userData128,
+		UserData64:   lo.FromPtrOr(pFilter.UserData64, 0),
+		UserData32:   lo.FromPtrOr(pFilter.UserData32, 0),
+		Code:         uint16(lo.FromPtrOr(pFilter.Code, 0)),
+		Ledger:       lo.FromPtrOr(pFilter.Ledger, 0),
+		TimestampMin: lo.FromPtrOr(pFilter.TimestampMin, 0),
+		TimestampMax: lo.FromPtrOr(pFilter.TimestampMax, 0),
+		Limit:        pFilter.Limit,
+		Flags:        flags.ToUint32(),
+	}, nil
+}

@@ -1,0 +1,7 @@
+{
+  "details": {
+    "operationId": "query-accounts",
+    "operationName": "QueryAccounts",
+    "serviceName": "proto.TigerBeetle"
+  }
+}

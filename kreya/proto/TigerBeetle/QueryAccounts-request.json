@@ -1,0 +1,15 @@
+{
+  "filter": {
+    "user_data128": "1000",
+    "user_data64": "100",
+    "user_data32": "10",
+    "code": "5",
+    "ledger": "1",
+    "timestamp_min": "0",
+    "timestamp_max": "0",
+    "limit": 10,
+    "flags": {
+      "reversed": false
+    }
+  }
+}

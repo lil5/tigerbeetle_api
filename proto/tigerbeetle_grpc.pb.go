@@ -26,6 +26,8 @@ const (
 	TigerBeetle_LookupTransfers_FullMethodName     = "/proto.TigerBeetle/LookupTransfers"
 	TigerBeetle_GetAccountTransfers_FullMethodName = "/proto.TigerBeetle/GetAccountTransfers"
 	TigerBeetle_GetAccountBalances_FullMethodName  = "/proto.TigerBeetle/GetAccountBalances"
+	TigerBeetle_QueryTransfers_FullMethodName      = "/proto.TigerBeetle/QueryTransfers"
+	TigerBeetle_QueryAccounts_FullMethodName       = "/proto.TigerBeetle/QueryAccounts"
 )
 
 // TigerBeetleClient is the client API for TigerBeetle service.
@@ -39,6 +41,8 @@ type TigerBeetleClient interface {
 	LookupTransfers(ctx context.Context, in *LookupTransfersRequest, opts ...grpc.CallOption) (*LookupTransfersReply, error)
 	GetAccountTransfers(ctx context.Context, in *GetAccountTransfersRequest, opts ...grpc.CallOption) (*GetAccountTransfersReply, error)
 	GetAccountBalances(ctx context.Context, in *GetAccountBalancesRequest, opts ...grpc.CallOption) (*GetAccountBalancesReply, error)
+	QueryTransfers(ctx context.Context, in *QueryTransfersRequest, opts ...grpc.CallOption) (*QueryTransfersReply, error)
+	QueryAccounts(ctx context.Context, in *QueryAccountsRequest, opts ...grpc.CallOption) (*QueryAccountsReply, error)
 }
 
 type tigerBeetleClient struct {
@@ -119,6 +123,26 @@ func (c *tigerBeetleClient) GetAccountBalances(ctx context.Context, in *GetAccou
 	return out, nil
 }
 
+func (c *tigerBeetleClient) QueryTransfers(ctx context.Context, in *QueryTransfersRequest, opts ...grpc.CallOption) (*QueryTransfersReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(QueryTransfersReply)
+	err := c.cc.Invoke(ctx, TigerBeetle_QueryTransfers_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tigerBeetleClient) QueryAccounts(ctx context.Context, in *QueryAccountsRequest, opts ...grpc.CallOption) (*QueryAccountsReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(QueryAccountsReply)
+	err := c.cc.Invoke(ctx, TigerBeetle_QueryAccounts_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TigerBeetleServer is the server API for TigerBeetle service.
 // All implementations must embed UnimplementedTigerBeetleServer
 // for forward compatibility.
@@ -130,6 +154,8 @@ type TigerBeetleServer interface {
 	LookupTransfers(context.Context, *LookupTransfersRequest) (*LookupTransfersReply, error)
 	GetAccountTransfers(context.Context, *GetAccountTransfersRequest) (*GetAccountTransfersReply, error)
 	GetAccountBalances(context.Context, *GetAccountBalancesRequest) (*GetAccountBalancesReply, error)
+	QueryTransfers(context.Context, *QueryTransfersRequest) (*QueryTransfersReply, error)
+	QueryAccounts(context.Context, *QueryAccountsRequest) (*QueryAccountsReply, error)
 	mustEmbedUnimplementedTigerBeetleServer()
 }
 
@@ -160,6 +186,12 @@ func (UnimplementedTigerBeetleServer) GetAccountTransfers(context.Context, *GetA
 }
 func (UnimplementedTigerBeetleServer) GetAccountBalances(context.Context, *GetAccountBalancesRequest) (*GetAccountBalancesReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAccountBalances not implemented")
+}
+func (UnimplementedTigerBeetleServer) QueryTransfers(context.Context, *QueryTransfersRequest) (*QueryTransfersReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryTransfers not implemented")
+}
+func (UnimplementedTigerBeetleServer) QueryAccounts(context.Context, *QueryAccountsRequest) (*QueryAccountsReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryAccounts not implemented")
 }
 func (UnimplementedTigerBeetleServer) mustEmbedUnimplementedTigerBeetleServer() {}
 func (UnimplementedTigerBeetleServer) testEmbeddedByValue()                     {}
@@ -308,6 +340,42 @@ func _TigerBeetle_GetAccountBalances_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TigerBeetle_QueryTransfers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryTransfersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TigerBeetleServer).QueryTransfers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TigerBeetle_QueryTransfers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TigerBeetleServer).QueryTransfers(ctx, req.(*QueryTransfersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TigerBeetle_QueryAccounts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAccountsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TigerBeetleServer).QueryAccounts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TigerBeetle_QueryAccounts_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TigerBeetleServer).QueryAccounts(ctx, req.(*QueryAccountsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TigerBeetle_ServiceDesc is the grpc.ServiceDesc for TigerBeetle service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -342,6 +410,14 @@ var TigerBeetle_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAccountBalances",
 			Handler:    _TigerBeetle_GetAccountBalances_Handler,
+		},
+		{
+			MethodName: "QueryTransfers",
+			Handler:    _TigerBeetle_QueryTransfers_Handler,
+		},
+		{
+			MethodName: "QueryAccounts",
+			Handler:    _TigerBeetle_QueryAccounts_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

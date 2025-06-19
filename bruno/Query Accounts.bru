@@ -1,0 +1,131 @@
+meta {
+  name: Query Accounts
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{url}}/accounts/query
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "filter": {
+      "user_data128": "1000",
+      "user_data64": "100",
+      "user_data32": "10",
+      "code": "5",
+      "ledger": "1",
+      "timestamp_min": "0",
+      "timestamp_max": "0",
+      "limit": 10,
+      "flags": {
+        "reversed": false
+      }
+    }
+  }
+}
+
+docs {
+  ## Query Accounts
+  
+  Query accounts based on flexible filter criteria including UserData fields, code, ledger, and timestamp ranges.
+  
+  ### Filter Fields:
+  
+  - **user_data128** (optional): Hex string representation of a 128-bit value
+  - **user_data64** (optional): 64-bit unsigned integer
+  - **user_data32** (optional): 32-bit unsigned integer  
+  - **code** (optional): Account code
+  - **ledger** (optional): Ledger number
+  - **timestamp_min** (optional): Minimum timestamp (nanoseconds)
+  - **timestamp_max** (optional): Maximum timestamp (nanoseconds)
+  - **limit** (required): Maximum number of accounts to return
+  - **flags** (optional):
+    - **reversed**: If true, returns accounts in reverse chronological order
+  
+  ### Examples:
+  
+  #### Query by UserData128
+  ```json
+  {
+    "filter": {
+      "user_data128": "1000",
+      "limit": 10
+    }
+  }
+  ```
+  
+  #### Query by multiple criteria
+  ```json
+  {
+    "filter": {
+      "user_data64": "100",
+      "code": "5",
+      "ledger": "1",
+      "limit": 20
+    }
+  }
+  ```
+  
+  #### Query with timestamp range
+  ```json
+  {
+    "filter": {
+      "user_data64": "100",
+      "timestamp_min": "1700000000000000000",
+      "timestamp_max": "1700001000000000000",
+      "limit": 50
+    }
+  }
+  ```
+  
+  #### Query in reverse order
+  ```json
+  {
+    "filter": {
+      "user_data64": "100",
+      "limit": 10,
+      "flags": {
+        "reversed": true
+      }
+    }
+  }
+  ```
+  
+  ### Response:
+  
+  Returns an array of Account objects matching the filter criteria:
+  
+  ```json
+  {
+    "accounts": [
+      {
+        "id": "1001",
+        "debits_pending": "0",
+        "debits_posted": "1000",
+        "credits_pending": "0",
+        "credits_posted": "500",
+        "user_data128": "1000",
+        "user_data64": "100",
+        "user_data32": "10",
+        "ledger": "1",
+        "code": "5",
+        "flags": {
+          "linked": false,
+          "debits_must_not_exceed_credits": false,
+          "credits_must_not_exceed_debits": false,
+          "history": true
+        },
+        "timestamp": "1700000000000000000"
+      }
+    ]
+  }
+  ```
+  
+  ### Note:
+  
+  This is a preview API and is subject to breaking changes in future versions.
+}

@@ -14,7 +14,7 @@ require (
 	github.com/slok/go-http-metrics v0.13.0
 	github.com/stretchr/testify v1.10.0
 	github.com/tidwall/gjson v1.18.0
-	github.com/tigerbeetle/tigerbeetle-go v0.16.40
+	github.com/tigerbeetle/tigerbeetle-go v0.16.44
 	google.golang.org/grpc v1.71.1
 	google.golang.org/protobuf v1.36.6
 )
